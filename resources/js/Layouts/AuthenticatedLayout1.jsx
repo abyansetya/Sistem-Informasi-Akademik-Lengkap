@@ -4,24 +4,27 @@ import NavLink from "@/Components/NavLink";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import { Link, usePage } from "@inertiajs/react";
 import { useState } from "react";
+import LeftNavbar from "./LeftNavbar";
 
-export default function Authenticated({ header, children }) {
+function AuthenticatedLayout1({ header, children }) {
     const user = usePage().props.auth.user;
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
 
     return (
-        <div className="min-h-screen bg-gray-100 ">
-            <nav className="border-b border-gray-100 bg-white dark:border-gray-700 ">
+        <div className="min-h-screen">
+            <nav className="border-b border-gray-100 bg-white font-poppins ">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="flex h-16 justify-between">
-                        <div className="flex">
-                            <div className="flex shrink-0 items-center">
-                                <Link href="/">
-                                    <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800 " />
-                                </Link>
-                            </div>
+                    <div className="flex h-20 justify-between">
+                        <div className="flex shrink-0 items-center con ">
+                            <Link href="/">
+                                <img
+                                    src="../LogoLeftBar.svg"
+                                    alt=""
+                                    className="w-[200px]"
+                                />
+                            </Link>
                         </div>
 
                         <div className="hidden sm:ms-6 sm:flex sm:items-center">
@@ -31,7 +34,7 @@ export default function Authenticated({ header, children }) {
                                         <span className="inline-flex rounded-md">
                                             <button
                                                 type="button"
-                                                className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none dark:bg-gray-800 dark:text-gray-400 dark:hover:text-gray-300"
+                                                className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-black transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none "
                                             >
                                                 {user.name}
 
@@ -153,15 +156,9 @@ export default function Authenticated({ header, children }) {
                 </div>
             </nav>
 
-            {header && (
-                <header className="bg-white shadow dark:bg-gray-800">
-                    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                        {header}
-                    </div>
-                </header>
-            )}
-
             <main>{children}</main>
         </div>
     );
 }
+
+export default AuthenticatedLayout1;

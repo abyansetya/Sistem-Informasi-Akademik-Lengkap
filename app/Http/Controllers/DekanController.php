@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class DekanController extends Controller
@@ -14,7 +15,14 @@ class DekanController extends Controller
      */
     public function index()
     {
-        return inertia::render('Dekan/Dashboard');
+        // Ambil role pengguna
+        $user = Auth::user();
+        $roles = $user->roles->pluck('name'); // Mengambil semua role yang dimiliki user
+
+        // Kirim role ke frontend
+        return Inertia::render('Dekan/Dashboard', [
+            'user' => $user
+        ]);
     }
 
     /**
