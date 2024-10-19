@@ -13,7 +13,7 @@ function AuthenticatedLayout1({ header, children }) {
         useState(false);
 
     return (
-        <div className="min-h-screen">
+        <div className="ontainer mx-auto p-6">
             <nav className="border-b border-gray-100 bg-white font-poppins ">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex h-20 justify-between">

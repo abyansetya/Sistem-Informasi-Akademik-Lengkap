@@ -33,6 +33,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/Kaprodi/dashboard', [KaprodiController::class, 'index'])->middleware(CheckRole::class.':Ketua Prodi')->name('kaprodi.index');
     Route::get('/PilihRole', [PilihRoleController::class, 'index'])->name('pilihrole.index');
     Route::post('/PilihRole/choose', [PilihRoleController::class, 'choose'])->name('pilihrole.choose');
+    Route::get('/BagianAkademik/KelolaRuang',[BagianAkademikController::class, 'KelolaRuang'])->middleware(CheckRole::class.':Bagian Akademik')->name('bagianakademik.KelolaRuang');
+    Route::post('/BagianAkademik/KelolaRuang/store', [BagianAkademikController::class, 'store'])->name('bagianakademik.storeRuang');
+    Route::put('/BagianAkademik/KelolaRuang/{id}', [BagianAkademikController::class, 'update'])->name('bagianakademik.updateRuang');
+    Route::delete('/BagianAkademik/KelolaRuang/{id}', [BagianAkademikController::class, 'destroy'])->name('bagianakademik.destroyRuang');
 });
 
 Route::middleware('auth')->group(function () {
