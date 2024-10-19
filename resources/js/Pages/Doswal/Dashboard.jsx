@@ -1,35 +1,75 @@
 import React from "react";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout1";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 
-function Dashboard({ user, roles }) {
-    const role = roles.length > 0 ? roles : "No role available";
+function Dashboard({ user }) {
     return (
-        <AuthenticatedLayout role={roles}>
+        <AuthenticatedLayout>
             <Head title="Dashboard" />
-            {/* <LeftNavbar /> */}
 
-            <div className="mx-auto max-w-7xl sm:px-6 lg:px-8 font-poppins ">
-                <div className="flex border rounded-[15px] shadow-lg shadow-gray-500/50 shadow-offset-x-2 shadow-offset-y-2 mt-6 p-4 items-center gap-[20px]">
-                    <div className="w-[30%] flex flex-col">
-                        <h1 className="font-bold text-[25px] ">Profil</h1>
-                        <img
-                            src="../fotoprofil.svg"
-                            alt=""
-                            className="w-[120px] self-center mt-4"
-                        />
-                        <div className="items-center flex flex-col mt-4 w-full">
-                            <p className="font-bold text-[18px]">{user.name}</p>
-                            <p className="text-cgrey-2 text-[13px]">
-                                NIP. {user.NIM_NIP}
+            <div className="py-12 px-4">
+                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8 font-poppins">
+                    {/* Flex container untuk card-card */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-[30px] w-full items-stretch">
+                        {/* Card Profil */}
+                        <div className="inline-flex border rounded-[15px] shadow-lg shadow-gray-500/50 p-4 items-center gap-[20px] bg-white w-full max-w-[400px] h-full">
+                            <img
+                                src="../fotoprofil.svg"
+                                alt="Dr. Sutikno"
+                                className="w-[100px] h-[100px] rounded-full object-cover"
+                            />
+                            <div className="flex flex-col justify-center">
+                                <p className="font-medium text-[24px] md:text-[18px] whitespace-nowrap">
+                                    {user.name}
+                                </p>
+                                <p className="text-cgrey-2 text-[12px] md:text-[13px]">
+                                    Dosen Wali
+                                </p>
+                            </div>
+                        </div>
+                        {/* Card Mahasiswa Bimbingan */}
+                        <div className="flex flex-row border rounded-[10px] shadow-lg shadow-gray-500/50 p-4 items-center justify-between bg-white w-full h-full">
+                            <p className="text-[16px] md:text-[24px] font-medium">
+                                Mahasiswa bimbingan
+                            </p>
+                            <span className="text-[14px] md:text-[20px] font-medium">
+                                25
+                            </span>
+                        </div>
+
+                        {/* Card Mahasiswa Perwalian */}
+                        <div className="flex flex-row border rounded-[10px] shadow-lg shadow-gray-500/50 p-4 items-center justify-between bg-white w-full h-full">
+                            <p className="text-[16px] md:text-[24px] font-medium">
+                                Mahasiswa perwalian aktif
+                            </p>
+                            <span className="text-[14px] md:text-[20px] font-medium">
+                                154
+                            </span>
+                        </div>
+
+                        {/* Card Mahasiswa Non-Aktif */}
+                        <div className="flex flex-row border rounded-[10px] shadow-lg shadow-gray-500/50 p-4 items-center justify-between bg-white w-full h-full">
+                            <p className="text-[16px] md:text-[24px] font-medium">
+                                Mahasiswa non-aktif
+                            </p>
+                            <span className="text-[14px] md:text-[20px] font-medium">
+                                23
+                            </span>
+                        </div>
+
+                        {/* Card Jadwal Mengajar */}
+                        <div className="flex flex-row border rounded-[10px] shadow-lg shadow-gray-500/50 p-4 items-center justify-between bg-white w-full h-full">
+                            <p className="text-[16px] md:text-[24px] font-medium">
+                                Jadwal mengajar
                             </p>
                         </div>
-                    </div>
-                    <div>
-                        <p className="font-bold text-[18px] mb-2">{role}</p>
-                        <p className="text-[18px]">
-                            Fakultas Sains dan Matematika
-                        </p>
+
+                        {/* Card Status Perkembangan Mahasiswa */}
+                        <div className="flex flex-row border rounded-[10px] shadow-lg shadow-gray-500/50 p-4 items-center justify-between bg-white w-full h-full">
+                            <p className="text-[16px] md:text-[24px] font-medium">
+                                Status Perkembangan Mahasiswa
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

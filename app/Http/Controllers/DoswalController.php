@@ -14,7 +14,6 @@ class DoswalController extends Controller
      */
     public function index()
     {
-        // Ambil role pengguna
         $user = Auth::user();
         $roles = session('selected_role', 'default');
 
