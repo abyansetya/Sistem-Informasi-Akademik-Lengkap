@@ -1,10 +1,10 @@
 import React from "react";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout1";
 import { Head } from "@inertiajs/react";
 
-function Dashboard({ user }) {
+function Dashboard({ user, roles }) {
     return (
-        <AuthenticatedLayout>
+        <AuthenticatedLayout role={roles}>
             <Head title="Dashboard" />
 
             <div className="py-12 px-4">
