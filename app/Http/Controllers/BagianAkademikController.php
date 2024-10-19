@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\RuangKelas;
+use Illuminate\Support\Facades\Auth;
+
 class BagianAkademikController extends Controller
 {
     /**
@@ -13,7 +15,15 @@ class BagianAkademikController extends Controller
      */
     public function index()
     {
-        return inertia::render('BagianAkademik/Dashboard');
+               // Ambil role pengguna
+        $user = Auth::user();
+        $roles = session('selected_role', 'default');
+
+        // Kirim role ke frontend
+        return Inertia::render('BagianAkademik/Dashboard', [
+            'user' => $user,
+            'roles' => $roles
+        ]);
     }
 
     /**
