@@ -36,24 +36,30 @@ class AuthenticatedSessionController extends Controller
         $user = Auth::user();
         $roles = $user->roles()->pluck('name'); // Ambil nama role pengguna
 
+
         if($roles->count() > 1){
             return redirect()->intended(route('pilihrole.index'));
         }
     
-        if ($roles->contains('Mahasiswa')) {
-            return redirect()->intended(route('mhs.index')); // Mengarahkan ke index MhsController
-        } elseif ($roles->contains('Dekan')) {
-            return redirect()->intended(route('dekan.index')); // Gantilah ini dengan nama rute yang sesuai untuk Dekan
-        } elseif ($roles->contains('Ketua Prodi')){
+        // Jika hanya ada 1 role, simpan role ke dalam session
+        $selectedRole = $roles->first();
+        session(['selected_role' => $selectedRole]);
+
+        // Cek role dan arahkan sesuai
+        if ($selectedRole === 'Mahasiswa') {
+            return redirect()->intended(route('mhs.index')); 
+        } elseif ($selectedRole === 'Dekan') {
+            return redirect()->intended(route('dekan.index')); 
+        } elseif ($selectedRole === 'Ketua Prodi') {
             return redirect()->intended(route('kaprodi.index'));
-        }elseif ($roles->contains('Pembimbing Akademik')) {
-            return redirect()->intended(route('doswal.index')); // Mengarahkan ke index Pembimbing Akademik
-        } elseif ($roles->contains('Bagian Akademik')) {
-            return redirect()->intended(route('bagianakademik.index')); // Mengarahkan ke index Bagian Akademik
+        } elseif ($selectedRole === 'Pembimbing Akademik') {
+            return redirect()->intended(route('doswal.index')); 
+        } elseif ($selectedRole === 'Bagian Akademik') {
+            return redirect()->intended(route('bagianakademik.index')); 
         }
-    
+
         // Jika tidak ada role yang sesuai, arahkan ke halaman default
-        return redirect('/'); // Halaman default
+        return redirect('/');
     }
     
     

@@ -3,9 +3,10 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout1";
 import { Head } from "@inertiajs/react";
 import LeftNavbar from "@/Layouts/LeftNavbar";
 
-function Dashboard({ user }) {
+function Dashboard({ user, roles }) {
+    const role = roles.length > 0 ? roles : "No role available";
     return (
-        <AuthenticatedLayout>
+        <AuthenticatedLayout role={roles}>
             <Head title="Dashboard" />
             {/* <LeftNavbar /> */}
 
@@ -27,7 +28,7 @@ function Dashboard({ user }) {
                     </div>
                     <div>
                         <p className="font-bold text-[18px] mb-2">
-                            Admin Dekan
+                            Admin {role}
                         </p>
                         <p className="text-[18px]">
                             Fakultas Sains dan Matematika

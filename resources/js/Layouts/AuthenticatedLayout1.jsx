@@ -6,11 +6,28 @@ import { Link, usePage } from "@inertiajs/react";
 import { useState } from "react";
 import LeftNavbar from "./LeftNavbar";
 
-function AuthenticatedLayout1({ header, children }) {
+function AuthenticatedLayout1({ header, children, role }) {
     const user = usePage().props.auth.user;
+    const roles = role;
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
+
+    // Fungsi untuk menentukan route dashboard berdasarkan prioritas role
+    const getDashboardRoute = () => {
+        if (roles.includes("Dekan")) {
+            return route("dekan.index");
+        } else if (roles.includes("Mahasiswa")) {
+            return route("mhs.index");
+        } else if (roles.includes("Bagian Akademik")) {
+            return route("bagianakademik.index");
+        } else if (roles.includes("Pembimbing Akademik")) {
+            return route("doswal.index");
+        } else if (roles.includes("Ketua Prodi")) {
+            return route("kaprodi.index");
+        }
+        return route("dashboard"); // Default route jika tidak ada role yang sesuai
+    };
 
     return (
         <div className="min-h-screen">
@@ -18,7 +35,7 @@ function AuthenticatedLayout1({ header, children }) {
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex h-20 justify-between">
                         <div className="flex shrink-0 items-center con ">
-                            <Link href="/">
+                            <Link href={getDashboardRoute()}>
                                 <img
                                     src="../LogoLeftBar.svg"
                                     alt=""

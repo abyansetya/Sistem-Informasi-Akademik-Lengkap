@@ -25,24 +25,28 @@ class PilihRoleController extends Controller
 
     public function choose(Request $request)
     {
+        // Validasi input untuk memastikan 'selected_role' dikirim
+        $request->validate([
+            'selected_role' => 'required|string'
+        ]);
+    
         // Simpan role yang dipilih ke dalam session
-        $role = $request->input('role');
-        Session::put('selected_role', $role);
-
-        // Arahkan pengguna ke dashboard sesuai role yang dipilih
-        switch ($role) {
+        session(['selected_role' => $request->selected_role]);
+    
+        // Arahkan pengguna berdasarkan role yang dipilih
+        switch ($request->selected_role) {
             case 'Mahasiswa':
-                return redirect()->route('mhs.index');
+                return redirect()->intended(route('mhs.index'));
             case 'Dekan':
-                return redirect()->route('dekan.index');
+                return redirect()->intended(route('dekan.index'));
             case 'Ketua Prodi':
-                return redirect()->route('kaprodi.index');
+                return redirect()->intended(route('kaprodi.index'));
             case 'Pembimbing Akademik':
-                return redirect()->route('doswal.index');
+                return redirect()->intended(route('doswal.index'));
             case 'Bagian Akademik':
-                return redirect()->route('bagianakademik.index');
+                return redirect()->intended(route('bagianakademik.index'));
             default:
-                return redirect('/');
+                return redirect('/'); // Jika role tidak ditemukan, arahkan ke halaman default
         }
-    }
+    }    
 }

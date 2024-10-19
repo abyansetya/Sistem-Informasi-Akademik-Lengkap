@@ -17,11 +17,12 @@ class DekanController extends Controller
     {
         // Ambil role pengguna
         $user = Auth::user();
-        $roles = $user->roles->pluck('name'); // Mengambil semua role yang dimiliki user
+        $roles = session('selected_role', 'default');
 
         // Kirim role ke frontend
         return Inertia::render('Dekan/Dashboard', [
-            'user' => $user
+            'user' => $user,
+            'roles' => $roles
         ]);
     }
 
