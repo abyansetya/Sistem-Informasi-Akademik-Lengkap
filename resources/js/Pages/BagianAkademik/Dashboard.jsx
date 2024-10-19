@@ -5,7 +5,7 @@ import AuthenticatedLayout1 from "@/Layouts/AuthenticatedLayout1";
 
 function Dashboard() {
     return (
-        <AuthenticatedLayout1>
+        <AuthenticatedLayout1 role="Bagian Akademik">
             <Head title="Dashboard" />
             <div className="py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
