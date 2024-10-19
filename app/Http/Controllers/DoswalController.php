@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class DoswalController extends Controller
@@ -13,7 +14,11 @@ class DoswalController extends Controller
      */
     public function index()
     {
-        return inertia::render('Doswal/Dashboard');
+
+        $user = Auth::user();
+        return Inertia::render('Doswal/Dashboard', [
+            'user' => $user
+        ]);
     }
 
     /**
