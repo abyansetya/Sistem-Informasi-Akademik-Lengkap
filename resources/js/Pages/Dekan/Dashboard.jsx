@@ -14,7 +14,7 @@ function Dashboard({ user, roles }) {
         <AuthenticatedLayout role={roles}>
             <Head title="Dashboard" />
             <div className="mx-auto max-w-7xl sm:px-6 lg:px-8 font-poppins">
-                <div className="flex border rounded-[15px] shadow-lg shadow-gray-500/50 mt-6 p-4 items-center gap-[20px]">
+                <div className="flex border rounded-[15px] shadow-lg shadow-gray-500/50 mt-6 p-6 items-center gap-[20px]">
                     <div className="w-[30%] flex flex-col">
                         <h1 className="font-bold text-[20px]">Profil</h1>
                         <img

@@ -15,4 +15,9 @@ class RuangKelas extends Model
 
     // Tentukan kolom yang boleh diisi menggunakan mass assignment
     protected $fillable = ['nama_ruang', 'gedung', 'kuota'];
+
+    public function programStudi()
+    {
+        return $this->belongsTo(ProgramStudi::class, 'program_studi_id', 'kode_program_studi');
+    }
 }

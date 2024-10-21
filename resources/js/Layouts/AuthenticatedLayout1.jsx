@@ -43,8 +43,8 @@ function AuthenticatedLayout1({ header, children, role }) {
                         Dashboard
                     </NavLink>
                     <NavLink
-                    // href={route("kelolaRuang.index")}
-                    // active={route().current("kelolaRuang.index")}
+                        href={route("dekan.kelolaruang")}
+                        active={route().current("dekan.kelolaruang")}
                     >
                         Ruang Kuliah
                     </NavLink>
