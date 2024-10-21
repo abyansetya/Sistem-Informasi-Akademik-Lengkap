@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
        
-        <title inertia>{{ config('app.name', 'Laravel') }}</title>
+        <title inertia>{{ config('app.name', 'SIAL') }}</title>
 
         <link rel="icon" type="image/png" href="https://kulon2.undip.ac.id/pluginfile.php/1/theme_moove/favicon/1692063688/undip.ico" />
 

@@ -25,6 +25,8 @@ function AuthenticatedLayout1({ header, children, role }) {
             return route("doswal.index");
         } else if (roles.includes("Ketua Prodi")) {
             return route("kaprodi.index");
+        } else if (roles.includes("pilihrole")) {
+            return route("pilihrole.index");
         }
         return route("dashboard"); // Default route jika tidak ada role yang sesuai
     };
@@ -182,17 +184,6 @@ function AuthenticatedLayout1({ header, children, role }) {
                     // active={route().current("kelolaJadwal.index")}
                     >
                         Monitoring Mata Kuliah
-                    </NavLink>
-                </>
-            );
-        } else {
-            return (
-                <>
-                    <NavLink
-                    // href={route("dashboard")}
-                    // active={route().current("dashboard")}
-                    >
-                        Dashboard
                     </NavLink>
                 </>
             );

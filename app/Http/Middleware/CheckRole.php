@@ -16,16 +16,17 @@ class CheckRole
         if (!Auth::check()) {
             return redirect('/login'); // Arahkan ke halaman login jika belum login
         }
-
-        // Ambil pengguna yang sedang login
-        $user = Auth::user();
-
+    
+        // Ambil role yang tersimpan di session
+        $roles = session('selected_role', 'default');
+    
         // Jika pengguna tidak memiliki role yang sesuai, arahkan ke halaman yang tidak diizinkan atau default
-        if ($role && !$user->roles()->where('name', $role)->exists()) {
-            abort(404);
+        if ($role && $roles !== $role) {
+            abort(404); // Atau gunakan abort(403) jika lebih sesuai
         }
-
-        // Jika pengguna memiliki role yang sesuai, izinkan untuk melanjutkan
+    
+        // Jika role sesuai, izinkan melanjutkan
         return $next($request);
     }
+    
 }
