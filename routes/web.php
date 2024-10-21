@@ -34,9 +34,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/PilihRole', [PilihRoleController::class, 'index'])->name('pilihrole.index');
     Route::post('/PilihRole/choose', [PilihRoleController::class, 'choose'])->name('pilihrole.choose');
     Route::get('/BagianAkademik/KelolaRuang',[BagianAkademikController::class, 'KelolaRuang'])->middleware(CheckRole::class.':Bagian Akademik')->name('bagianakademik.KelolaRuang');
-    Route::post('/BagianAkademik/KelolaRuang/store', [BagianAkademikController::class, 'store'])->name('bagianakademik.storeRuang');
-    Route::put('/BagianAkademik/KelolaRuang/{id}', [BagianAkademikController::class, 'update'])->name('bagianakademik.updateRuang');
-    Route::delete('/BagianAkademik/KelolaRuang/{id}', [BagianAkademikController::class, 'destroy'])->name('bagianakademik.destroyRuang');
+    Route::post('/BagianAkademik/KelolaRuang/store', [BagianAkademikController::class, 'storeRuang'])->name('bagianakademik.storeRuang');
+    Route::put('/BagianAkademik/KelolaRuang/{id}', [BagianAkademikController::class, 'updateRuang'])->name('bagianakademik.updateRuang');
+    Route::delete('/BagianAkademik/KelolaRuang/{id}', [BagianAkademikController::class, 'destroyRuang'])->name('bagianakademik.destroyRuang');
+    Route::get('/BagianAkademik/KelolaProgramStudi',[BagianAkademikController::class,'KelolaProgramStudi'])->middleware(CheckRole::class.':Bagian Akademik')->name('bagianakademik.KelolaProgramStudi');
+    Route::post('/BagianAkademik/KelolaProgramStudi/store', [BagianAkademikController::class, 'storeProgramStudi'])->name('bagianakademik.storeProgramStudi');
+    Route::put('/BagianAkademik/KelolaProgramStudi/{id}', [BagianAkademikController::class, 'updateProgramStudi'])->name('bagianakademik.updateProgramStudi');
+    Route::delete('/BagianAkademik/KelolaProgramStudi/{id}', [BagianAkademikController::class, 'destroyProgramStudi'])->name('bagianakademik.destroyProgramStudi');
 });
 
 Route::middleware('auth')->group(function () {

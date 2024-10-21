@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\RuangKelas;
+use App\Models\ProgramStudi;
 use Illuminate\Support\Facades\Auth;
 
 class BagianAkademikController extends Controller
@@ -37,7 +38,7 @@ class BagianAkademikController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function storeRuang(Request $request)
     {
         // Validasi data input dari form
         $validatedData = $request->validate([
@@ -76,7 +77,7 @@ class BagianAkademikController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function updateRuang(Request $request, $id)
     {
     // Validasi data
     $validatedData = $request->validate([
@@ -105,7 +106,7 @@ class BagianAkademikController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroyRuang($id)
     {
         $ruangKelas = RuangKelas::find($id);
     
@@ -116,7 +117,6 @@ class BagianAkademikController extends Controller
             return redirect()->back()->with('error', 'Ruangan tidak ditemukan');
         }
     }
-
     
     public function KelolaRuang(User $user)
     {
@@ -124,4 +124,68 @@ class BagianAkademikController extends Controller
         return inertia::render('BagianAkademik/KelolaRuang',['ruangKelas' => $ruangKelas]);
     }
     
+    public function KelolaProgramStudi (User $user)
+    {
+        $programStudi = ProgramStudi::all();
+        return inertia::render('BagianAkademik/KelolaProgramStudi',['programStudi' => $programStudi]);
+    }
+
+    public function storeProgramStudi(Request $request)
+    {
+        // Validasi data input dari form
+        $validatedData = $request->validate([
+            'kode_program_studi' => 'required|string|max:255',
+            'nama_program_studi' => 'required|string|max:255',
+            'fakultas' => 'required|string|max:255',
+        ]);
+
+        // Menyimpan data ke tabel ProgramStudi
+        ProgramStudi::create([
+            'kode_program_studi' => $validatedData['kode_program_studi'],
+            'nama_program_studi' => $validatedData['nama_program_studi'],
+            'fakultas' => $validatedData['fakultas'],
+        ]);
+
+        // Redirect kembali ke halaman kelola program studi dengan pesan sukses
+        return redirect()->back()->with('success', 'Program Studi baru berhasil ditambahkan');
+    }
+
+    public function updateProgramStudi(Request $request, $id)
+    {
+    // Validasi data
+    $validatedData = $request->validate([
+        'kode_program_studi' => 'required|string|max:255',
+        'nama_program_studi' => 'required|string|max:255',
+        'fakultas' => 'required|string|max:255',
+    ]);
+
+    // Cari data ruangan yang akan diupdate
+    $programStudi = ProgramStudi::find($id);
+
+    if ($programStudi) {
+        // Update data
+        $programStudi->update([
+            'kode_program_studi' => $validatedData['kode_program_studi'],
+            'nama_program_studi' => $validatedData['nama_program_studi'],
+            'fakultas' => $validatedData['fakultas'],
+        ]);
+
+        // Redirect kembali dengan pesan sukses
+        return redirect()->back()->with('success', 'Program Studi berhasil diupdate');
+    } else {
+        return redirect()->back()->with('error', 'Program Studi tidak ditemukan');
+    }
+    }
+
+    public function destroyProgramStudi($id)
+    {
+        $programStudi = ProgramStudi::find($id);
+    
+        if ($programStudi) {
+            $programStudi->delete();  // Menghapus ruangan
+            return redirect()->back()->with('success', 'Program Studi berhasil dihapus');
+        } else {
+            return redirect()->back()->with('error', 'Program Studi tidak ditemukan');
+        }
+    }
 }

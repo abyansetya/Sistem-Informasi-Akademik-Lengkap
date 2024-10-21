@@ -92,6 +92,12 @@ function AuthenticatedLayout1({ header, children, role }) {
                     >
                         Kelola Ruangan
                     </NavLink>
+                    <NavLink
+                        href={route("bagianakademik.KelolaProgramStudi")}
+                        active={route().current("bagianakademik.KelolaProgramStudi")}
+                    >
+                        Kelola Program Studi
+                    </NavLink>
                 </>
             );
         } else if (roles.includes("Pembimbing Akademik")) {
