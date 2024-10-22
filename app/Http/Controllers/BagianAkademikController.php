@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AlokasiRuangan;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -187,5 +188,31 @@ class BagianAkademikController extends Controller
         } else {
             return redirect()->back()->with('error', 'Program Studi tidak ditemukan');
         }
+    }
+
+    public function storeAlokasi (Request $request){
+        $validatedData = $request->validate([
+            'program_studi_id' => 'required|exists:program_studi_id',
+            'ruang_kelas_id' => 'required|array',
+            'ruang_kelas_id.*' => 'exists:ruang_kelas_id',
+        ]);
+
+        foreach($request->ruang_kelas_id as $ruangId){
+            AlokasiRuangan::created([
+                'program_studi_id'=> $validatedData['program_studi_id'],
+                'ruang_kelas_id' => $ruangId,
+                'status' => 'pending',
+            ]);
+        }
+        return redirect()->back()-with('success', 'ruangan berhasil di alokasikan');
+    }
+
+    public function getAlokasi(){
+        $alokasi = AlokasiRuangan::with('programStudi', 'ruangKelas')->get();
+        return Inertia::render('BagianAkademik/AlokasiRuangan', [
+            'alokasiData' => $alokasi,
+            'programStudiData' => ProgramStudi::all(),
+            'ruangKelasData' => RuangKelas::all(),
+        ]);
     }
 }
