@@ -51,7 +51,7 @@ function KelolaProgramStudi({ programStudi }) {
     <AuthenticatedLayout role="Bagian Akademik">
       <Head title='Kelola Program Studi' />
 
-      <div className="container mx-auto p6 max-w-7xl">
+      <div className="container mx-auto p-6 max-w-7xl">
         <h1 className="text-2xl font-bold mb-4">Kelola Program Studi</h1>
         <button 
             type='button' 
