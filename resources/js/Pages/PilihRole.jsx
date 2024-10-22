@@ -1,5 +1,5 @@
 import React from "react";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout1";
 import { useForm } from "@inertiajs/react";
 
 function PilihRole({ roles }) {
@@ -15,7 +15,7 @@ function PilihRole({ roles }) {
     };
 
     return (
-        <AuthenticatedLayout>
+        <AuthenticatedLayout role="pilihrole">
             <div className="container mx-auto p-6">
                 <h2 className="text-2xl font-bold mb-4">Pilih Role Anda</h2>
                 {roles.length > 0 ? (

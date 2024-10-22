@@ -24,10 +24,11 @@ export default {
                 cgreen: {
                     0: "#45C882",
                     1: "#69DB7C",
+                    2: "#2ED039",
                 },
                 cred: {
                     0: "#FF8787",
-                    1: "FF0000",
+                    1: "#FF0000",
                 },
                 cyellow: {
                     0: "#FCD307",

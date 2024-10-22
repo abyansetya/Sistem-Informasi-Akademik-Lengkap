@@ -11,6 +11,10 @@ class ProgramStudi extends Model
 
     protected $table = 'program_studi';
 
+    protected $primaryKey = 'kode_program_studi'; // Menentukan primary key
+    public $incrementing = false; // Menonaktifkan auto-increment jika primary key bukan integer
+    protected $keyType = 'string'; // Tipe data primary key
+
     protected $fillable = [
         'kode_program_studi', 
         'nama_program_studi', 
@@ -25,5 +29,15 @@ class ProgramStudi extends Model
     public function mataKuliah()
     {
         return $this->hasMany(MataKuliah::class, 'program_studi_id', 'kode_program_studi');
+    }
+
+    /**
+     * Relasi dengan model RuangKelas.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function ruangKelas()
+    {
+        return $this->hasMany(RuangKelas::class, 'program_studi_id', 'kode_program_studi');
     }
 }

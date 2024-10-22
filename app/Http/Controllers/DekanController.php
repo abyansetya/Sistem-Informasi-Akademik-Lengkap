@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Models\RuangKelas;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
@@ -25,6 +26,41 @@ class DekanController extends Controller
             'roles' => $roles
         ]);
     }
+
+    public function kelolaruang()
+    {
+        $user = Auth::user();
+        $roles = session('selected_role', 'default');
+    
+        // Eager load program studi dari relasi programStudi
+        $ruangKelas = RuangKelas::with('programStudi')->paginate(15);
+    
+        return Inertia::render('Dekan/KelolaRuang', [
+            'user' => $user,
+            'roles' => $roles,
+            'ruangkelas' => $ruangKelas
+        ]);
+    }
+    
+
+    public function setujui($id)
+    {
+        // Cari ruang kelas berdasarkan ID
+        $ruangKelas = RuangKelas::findOrFail($id);
+    
+        // Ubah status menjadi 'Disetujui'
+        $ruangKelas->status = 'Disetujui';
+        
+        // Simpan perubahan ke database
+        $ruangKelas->save();
+    
+        // Alihkan kembali ke halaman yang sesuai dengan flash message
+        return redirect()->route('dekan.kelolaruang')->with([
+            'success' => true,
+            'status' => $ruangKelas->status,
+        ]);
+    }
+    
 
     /**
      * Show the form for creating a new resource.
