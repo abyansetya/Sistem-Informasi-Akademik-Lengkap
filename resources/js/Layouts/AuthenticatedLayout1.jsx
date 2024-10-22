@@ -6,25 +6,214 @@ import { Link, usePage } from "@inertiajs/react";
 import { useState } from "react";
 import LeftNavbar from "./LeftNavbar";
 
-function AuthenticatedLayout1({ header, children }) {
+function AuthenticatedLayout1({ header, children, role }) {
     const user = usePage().props.auth.user;
+    const roles = role;
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
 
+    // Fungsi untuk menentukan route dashboard berdasarkan prioritas role
+    const getDashboardRoute = () => {
+        if (roles.includes("Dekan")) {
+            return route("dekan.index");
+        } else if (roles.includes("Mahasiswa")) {
+            return route("mhs.index");
+        } else if (roles.includes("Bagian Akademik")) {
+            return route("bagianakademik.index");
+        } else if (roles.includes("Pembimbing Akademik")) {
+            return route("doswal.index");
+        } else if (roles.includes("Ketua Prodi")) {
+            return route("kaprodi.index");
+        } else if (roles.includes("pilihrole")) {
+            return route("pilihrole.index");
+        }
+        return route("dashboard"); // Default route jika tidak ada role yang sesuai
+    };
+
+    // Menentukan menu berdasarkan role
+    const renderNavItemsByRole = () => {
+        if (roles.includes("Dekan")) {
+            return (
+                <>
+                    <NavLink
+                        href={route("dekan.index")}
+                        active={route().current("dekan.index")}
+                    >
+                        Dashboard
+                    </NavLink>
+                    <NavLink
+                        href={route("dekan.kelolaruang")}
+                        active={route().current("dekan.kelolaruang")}
+                    >
+                        Ruang Kuliah
+                    </NavLink>
+                    <NavLink
+                    // href={route("kelolaRuang.index")}
+                    // active={route().current("kelolaRuang.index")}
+                    >
+                        Jadwal Kuliah
+                    </NavLink>
+                </>
+            );
+        } else if (roles.includes("Mahasiswa")) {
+            return (
+                <>
+                    <NavLink
+                    // href={route("mhs.index")}
+                    // active={route().current("mhs.index")}
+                    >
+                        Dashboard
+                    </NavLink>
+                    <NavLink
+                    // href={route("irs.index")}
+                    // active={route().current("irs.index")}
+                    >
+                        IRS
+                    </NavLink>
+                    <NavLink
+                    // href={route("irs.index")}
+                    // active={route().current("irs.index")}
+                    >
+                        KHS
+                    </NavLink>
+                </>
+            );
+        } else if (roles.includes("Bagian Akademik")) {
+            return (
+                <>
+                    <NavLink
+                        href={route("bagianakademik.index")}
+                        active={route().current("bagianakademik.index")}
+                    >
+                        Dashboard
+                    </NavLink>
+                    <NavLink
+                        href={route("bagianakademik.KelolaRuang")}
+                        active={route().current("bagianakademik.KelolaRuang")}
+                    >
+                        Kelola Ruangan
+                    </NavLink>
+                    <NavLink
+                        href={route("bagianakademik.KelolaProgramStudi")}
+                        active={route().current("bagianakademik.KelolaProgramStudi")}
+                    >
+                        Kelola Program Studi
+                    </NavLink>
+                </>
+            );
+        } else if (roles.includes("Pembimbing Akademik")) {
+            return (
+                <>
+                    <NavLink
+                    // href={route("doswal.index")}
+                    // active={route().current("doswal.index")}
+                    >
+                        Dashboard
+                    </NavLink>
+                    <NavLink
+                    // href={route("doswal.index")}
+                    // active={route().current("doswal.index")}
+                    >
+                        Mahasiswa Perwalian
+                    </NavLink>
+                    <NavLink
+                    // href={route("doswal.index")}
+                    // active={route().current("doswal.index")}
+                    >
+                        Verifikasi IRS
+                    </NavLink>
+                    <Dropdown>
+                        <Dropdown.Trigger>
+                            <span className="inline-flex rounded-md">
+                                <button
+                                    type="button"
+                                    className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-black transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none "
+                                >
+                                    Others
+                                    <svg
+                                        className="-me-0.5 ms-2 h-4 w-4"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                    >
+                                        <path
+                                            fillRule="evenodd"
+                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                            clipRule="evenodd"
+                                        />
+                                    </svg>
+                                </button>
+                            </span>
+                        </Dropdown.Trigger>
+
+                        <Dropdown.Content>
+                            <Dropdown.Link
+                            // href={route("profile.edit")}
+                            >
+                                Status Perkembangan Mahasiswa
+                            </Dropdown.Link>
+                            <Dropdown.Link
+                            // href={route("logout")}
+                            // method="post"
+                            // as="button"
+                            >
+                                Monitoring Mata Kuliah
+                            </Dropdown.Link>
+                        </Dropdown.Content>
+                    </Dropdown>
+                </>
+            );
+        } else if (roles.includes("Ketua Prodi")) {
+            return (
+                <>
+                    <NavLink
+                    // href={route("kaprodi.index")}
+                    // active={route().current("kaprodi.index")}
+                    >
+                        Dashboard
+                    </NavLink>
+                    <NavLink
+                    // href={route("kelolaJadwal.index")}
+                    // active={route().current("kelolaJadwal.index")}
+                    >
+                        Jadwal Kuliah
+                    </NavLink>
+                    <NavLink
+                    // href={route("kelolaJadwal.index")}
+                    // active={route().current("kelolaJadwal.index")}
+                    >
+                        Mahasiswa
+                    </NavLink>
+                    <NavLink
+                    // href={route("kelolaJadwal.index")}
+                    // active={route().current("kelolaJadwal.index")}
+                    >
+                        Monitoring Mata Kuliah
+                    </NavLink>
+                </>
+            );
+        }
+    };
+
     return (
-        <div className="ontainer mx-auto p-6">
+        <div className="container mx-auto p-6">
             <nav className="border-b border-gray-100 bg-white font-poppins ">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex h-20 justify-between">
-                        <div className="flex shrink-0 items-center con ">
-                            <Link href="/">
+                        <div className="flex shrink-0 items-center ">
+                            <Link href={getDashboardRoute()}>
                                 <img
                                     src="../LogoLeftBar.svg"
                                     alt=""
                                     className="w-[200px]"
                                 />
                             </Link>
+                        </div>
+
+                        {/* Tampilkan item menu berdasarkan role */}
+                        <div className="flex shrink-0 items-center gap-10">
+                            {renderNavItemsByRole()}
                         </div>
 
                         <div className="hidden sm:ms-6 sm:flex sm:items-center">
@@ -156,7 +345,7 @@ function AuthenticatedLayout1({ header, children }) {
                 </div>
             </nav>
 
-            <main>{children}</main>
+            <main className="">{children}</main>
         </div>
     );
 }

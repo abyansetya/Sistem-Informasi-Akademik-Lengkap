@@ -70,7 +70,7 @@ function KelolaRuang({ ruangKelas }) {
     };
 
     return (
-        <AuthenticatedLayout>
+        <AuthenticatedLayout role="Bagian Akademik">
             <Head title="Kelola Ruangan" />
 
             {/* Form untuk input ruang baru atau edit */}
