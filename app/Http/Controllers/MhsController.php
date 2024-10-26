@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class MhsController extends Controller
@@ -14,8 +15,15 @@ class MhsController extends Controller
      */
     public function index()
     {
-        // Render the Mhs dashboard view via Inertia
-        return inertia::render('Mhs/Dashboard');
+        // Ambil role pengguna
+        $user = Auth::user();
+        $roles = session('selected_role', 'default');
+
+        // Kirim role ke frontend
+        return Inertia::render('Mhs/Dashboard', [
+            'user' => $user,
+            'roles' => $roles
+        ]);
     }
 
     /**

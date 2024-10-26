@@ -4,7 +4,7 @@ import NavLink from "@/Components/NavLink";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import { Link, usePage } from "@inertiajs/react";
 import { useState } from "react";
-import LeftNavbar from "./LeftNavbar";
+
 
 function AuthenticatedLayout1({ header, children, role }) {
     const user = usePage().props.auth.user;
@@ -28,7 +28,6 @@ function AuthenticatedLayout1({ header, children, role }) {
         } else if (roles.includes("pilihrole")) {
             return route("pilihrole.index");
         }
-        return route("dashboard"); // Default route jika tidak ada role yang sesuai
     };
 
     // Menentukan menu berdasarkan role
@@ -49,8 +48,8 @@ function AuthenticatedLayout1({ header, children, role }) {
                         Ruang Kuliah
                     </NavLink>
                     <NavLink
-                    // href={route("kelolaRuang.index")}
-                    // active={route().current("kelolaRuang.index")}
+                        href={route("dekan.jadwalkuliah")}
+                        active={route().current("dekan.jadwalkuliah")}
                     >
                         Jadwal Kuliah
                     </NavLink>
@@ -60,8 +59,8 @@ function AuthenticatedLayout1({ header, children, role }) {
             return (
                 <>
                     <NavLink
-                    // href={route("mhs.index")}
-                    // active={route().current("mhs.index")}
+                        href={route("mhs.index")}
+                        active={route().current("mhs.index")}
                     >
                         Dashboard
                     </NavLink>
@@ -89,13 +88,15 @@ function AuthenticatedLayout1({ header, children, role }) {
                         Dashboard
                     </NavLink>
                     <NavLink
-                        href={route('bagianakademik.AlokasiRuangan')}
-                        active={route().current('bagianakademik.AlokasiRuangan')}
+                        href={route("bagianakademik.AlokasiRuangan")}
+                        active={route().current(
+                            "bagianakademik.AlokasiRuangan"
+                        )}
                     >
                         Alokasi Ruangan
                     </NavLink>
                     <Dropdown>
-                    <Dropdown.Trigger>
+                        <Dropdown.Trigger>
                             <span className="inline-flex rounded-md">
                                 <button
                                     type="button"
@@ -120,14 +121,20 @@ function AuthenticatedLayout1({ header, children, role }) {
 
                         <Dropdown.Content>
                             <Dropdown.Link
-                            href={route("bagianakademik.KelolaRuang")}
-                            active={route().current("bagianakademik.KelolaRuang")}
+                                href={route("bagianakademik.KelolaRuang")}
+                                active={route().current(
+                                    "bagianakademik.KelolaRuang"
+                                )}
                             >
                                 Kelola Ruangan
                             </Dropdown.Link>
                             <Dropdown.Link
-                             href={route("bagianakademik.KelolaProgramStudi")}
-                             active={route().current("bagianakademik.KelolaProgramStudi")}
+                                href={route(
+                                    "bagianakademik.KelolaProgramStudi"
+                                )}
+                                active={route().current(
+                                    "bagianakademik.KelolaProgramStudi"
+                                )}
                             >
                                 Kelola Program Studi
                             </Dropdown.Link>
@@ -139,8 +146,8 @@ function AuthenticatedLayout1({ header, children, role }) {
             return (
                 <>
                     <NavLink
-                    href={route("doswal.index")}
-                    active={route().current("doswal.index")}
+                    // href={route("doswal.index")}
+                    // active={route().current("doswal.index")}
                     >
                         Dashboard
                     </NavLink>
@@ -346,8 +353,8 @@ function AuthenticatedLayout1({ header, children, role }) {
                 >
                     <div className="space-y-1 pb-3 pt-2">
                         <ResponsiveNavLink
-                            href={route("dashboard")}
-                            active={route().current("dashboard")}
+                        // href={route("dashboard")}
+                        // active={route().current("dashboard")}
                         >
                             Dashboard
                         </ResponsiveNavLink>
