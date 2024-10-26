@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
 
 class KaprodiController extends Controller
 {
@@ -16,8 +17,6 @@ class KaprodiController extends Controller
     {
         $user = Auth::user();
         $roles = session('selected_role', 'default');
-
-        // Kirim role ke frontend
         return Inertia::render('Kaprodi/Dashboard', [
             'user' => $user,
             'roles' => $roles
@@ -25,30 +24,51 @@ class KaprodiController extends Controller
     }
     public function dashboard()
     {
+        $user = Auth::user();
+        $roles = session('selected_role', 'default');
         return Inertia::render('Kaprodi/Dashboard', [
-            // data untuk dashboard
+            'user' => $user,
+            'roles' => $roles
         ]);
     }
-    
     public function jadwalKuliah()
     {
-        return Inertia::render('Kaprod/JadwalKuliah', [
-            'user' => auth()->user(),
-            'roles' => auth()->user()->roles
+        $user = Auth::user();
+        $roles = session('selected_role', 'default');
+        
+        // Fetch data from the database
+        $mataKuliah = \App\Models\MataKuliah::all(); // Adjust the model path as necessary
+    
+        return Inertia::render('Kaprodi/JadwalKuliah', [
+            'user' => $user,
+            'roles' => $roles,
+            'mataKuliah' => $mataKuliah // Pass the fetched data to the view
         ]);
     }
+    public function showJadwalDetail($id)
+    {
+        $mataKuliah = DB::table('mata_kuliah')->where('id', $id)->first();
     
+        return Inertia::render('Kaprodi/JadwalDetail', [
+            'mataKuliah' => $mataKuliah,
+        ]);
+    }
     public function mahasiswa()
     {
+        $user = Auth::user();
+        $roles = session('selected_role', 'default');
         return Inertia::render('Kaprodi/Mahasiswa', [
-            // data untuk mahasiswa
+            'user' => $user,
+            'roles' => $roles
         ]);
     }
-    
     public function monitoringMataKuliah()
     {
-        return Inertia::render('Kaprodi/MonitoringMataKuliah', [
-            // data untuk monitoring mata kuliah
+        $user = Auth::user();
+        $roles = session('selected_role', 'default');
+        return Inertia::render('Kaprodi/Monitoring', [
+            'user' => $user,
+            'roles' => $roles
         ]);
     }
     

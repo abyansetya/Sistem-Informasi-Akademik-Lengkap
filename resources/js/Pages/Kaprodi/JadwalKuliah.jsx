@@ -1,11 +1,12 @@
 import React from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout1";
-import { Head } from "@inertiajs/react";
+import { Head, Link } from "@inertiajs/react";
 
-function JadwalKuliah({user,roles}) {
+function JadwalKuliah({ user, roles, mataKuliah }) {
     return (
         <AuthenticatedLayout role={roles}>
             <Head title="Jadwal Kuliah" />
+
             {/* Filter Section */}
             <div className="flex justify-between p-8">
                 <div className="flex space-x-4">
@@ -36,25 +37,22 @@ function JadwalKuliah({user,roles}) {
 
             {/* Cards Section */}
             <div className="grid grid-cols-4 gap-6 p-8">
-                {/* Sample Card */}
-                {Array(8).fill().map((_, index) => (
+                {mataKuliah.map((matkul) => (
                     <div
-                        key={index}
-                        className={`border p-4 rounded-lg shadow-md ${
-                            index % 2 === 0 ? 'border-red-500' : 'border-yellow-500'
-                        }`}
+                        key={matkul.id}
+                        className="border p-4 rounded-lg shadow-md"
                     >
                         <div className="h-40 bg-gray-200 mb-4"></div>
-                        <h3 className="text-lg font-bold">Sistem Informasi</h3>
-                        <p>Dosen: Bapak Kuri Kurniawan S.pd</p>
-                        <p>Ruangan: C101</p>
-                        <p>Pukul: 13:00</p>
+                        <h3 className="text-lg font-bold">{matkul.nama_mata_kuliah}</h3>
+                        <p>SKS: {matkul.sks}</p>
+                        <p>Semester: {matkul.semester}</p>
                         <button
-                            className={`mt-4 px-4 py-2 rounded-lg font-bold ${
-                                index % 2 === 0 ? 'bg-red-500 text-white' : 'bg-yellow-500 text-black'
-                            }`}
+                            onClick={() => {
+                                window.location.href = route('kaprodi.jadwalDetail', { id: matkul.id });
+                            }}
+                            className="mt-4 px-4 py-2 rounded-lg font-bold bg-red-500 text-white"
                         >
-                            {index % 2 === 0 ? 'Pengaturan' : 'Lihat'}
+                            Atur Jadwal
                         </button>
                     </div>
                 ))}
@@ -64,4 +62,3 @@ function JadwalKuliah({user,roles}) {
 }
 
 export default JadwalKuliah;
-

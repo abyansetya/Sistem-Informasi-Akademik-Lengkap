@@ -17,10 +17,10 @@ function Dashboard({ user, roles }) {
 
                     {/* User Information */}
                     <div>
-                        <h2 className="text-xl font-bold text-gray-700">Jabatan: Ketua Program Studi</h2>
+                        <h2 className="text-xl font-bold text-gray-700">Ketua Program Studi</h2>
                         <p className="text-gray-500">Nama: {user.name}</p>
                         <p className="text-gray-500">NIP: {user.nip}</p>
-                        <p className="text-gray-500">Fakultas: Sains dan Matematika</p>
+                        <p className="text-gray-500">Fakultas Sains dan Matematika</p>
                     </div>
                 </div>
             </div>
