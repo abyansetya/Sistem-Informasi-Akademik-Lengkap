@@ -92,7 +92,7 @@ export default function Login({ status, canResetPassword }) {
                 </div>
 
                 <PrimaryButton
-                    className="mt-4 h-[40px]     flex justify-center w-[350px] "
+                    className="mt-4 h-[40px] flex justify-center w-[350px] "
                     disabled={processing}
                 >
                     MASUK
