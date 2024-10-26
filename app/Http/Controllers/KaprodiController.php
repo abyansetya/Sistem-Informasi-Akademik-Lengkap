@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
+use App\Models\Student;
 
 class KaprodiController extends Controller
 {
@@ -36,19 +37,19 @@ class KaprodiController extends Controller
         $user = Auth::user();
         $roles = session('selected_role', 'default');
         
-        // Fetch data from the database
-        $mataKuliah = \App\Models\MataKuliah::all(); // Adjust the model path as necessary
+        // Fetch mata_kuliah data with the id field
+        $mataKuliah = DB::table('mata_kuliah')->select('id', 'nama_mata_kuliah', 'sks', 'semester')->get();
     
         return Inertia::render('Kaprodi/JadwalKuliah', [
             'user' => $user,
             'roles' => $roles,
-            'mataKuliah' => $mataKuliah // Pass the fetched data to the view
+            'mataKuliah' => $mataKuliah,
         ]);
     }
-    public function showJadwalDetail($id)
+    public function jadwalDetail($id)
     {
         $mataKuliah = DB::table('mata_kuliah')->where('id', $id)->first();
-    
+        
         return Inertia::render('Kaprodi/JadwalDetail', [
             'mataKuliah' => $mataKuliah,
         ]);
@@ -57,9 +58,12 @@ class KaprodiController extends Controller
     {
         $user = Auth::user();
         $roles = session('selected_role', 'default');
+        $students = DB::table('students')->select('nama', 'nim', 'angkatan', 'status_irs')->get();
+    
         return Inertia::render('Kaprodi/Mahasiswa', [
             'user' => $user,
-            'roles' => $roles
+            'roles' => $roles,
+            'students' => $students,
         ]);
     }
     public function monitoringMataKuliah()
@@ -72,6 +76,18 @@ class KaprodiController extends Controller
         ]);
     }
     
+    public function updateStatusIRS(Request $request, $studentId)
+    {
+        // Find the student by ID
+        $student = Student::findOrFail($studentId);
+        
+        // Toggle the IRS status
+        $student->status_irs = $student->status_irs === 'Setuju' ? 'NotSet' : 'Setuju';
+        $student->save();
+
+        return response()->json(['message' => 'Status updated successfully']);
+    }
+
     /**
      * Show the form for creating a new resource.
      */

@@ -42,18 +42,18 @@ function JadwalKuliah({ user, roles, mataKuliah }) {
                         key={matkul.id}
                         className="border p-4 rounded-lg shadow-md"
                     >
-                        <div className="h-40 bg-gray-200 mb-4"></div>
+                        {/* <div className="h-40 bg-gray-200 mb-4"></div> */}
                         <h3 className="text-lg font-bold">{matkul.nama_mata_kuliah}</h3>
                         <p>SKS: {matkul.sks}</p>
                         <p>Semester: {matkul.semester}</p>
                         <button
-                            onClick={() => {
-                                window.location.href = route('kaprodi.jadwalDetail', { id: matkul.id });
-                            }}
-                            className="mt-4 px-4 py-2 rounded-lg font-bold bg-red-500 text-white"
-                        >
-                            Atur Jadwal
-                        </button>
+                        onClick={() => {
+                            Inertia.visit(route('kaprodi.jadwalDetail', { id: matkul.id }));
+                        }}
+                        className="mt-4 px-4 py-2 rounded-lg font-bold bg-red-500 text-white hover:bg-green-700 transition-all duration-300 ease-in-out"
+                    >
+                        BELOM BISA
+                    </button>
                     </div>
                 ))}
             </div>

@@ -18,7 +18,7 @@ function JadwalDetail({ mataKuliah }) {
                 {/* Form Pengaturan Jadwal */}
                 <div>
                     <h3 className="text-xl font-bold">Pengaturan Jadwal</h3>
-                    {/* Tambahkan form dan tabel sesuai gambar di atas */}
+                    {/* Tambahkan form dan tabel sesuai kebutuhan */}
                 </div>
             </div>
         </AuthenticatedLayout>
