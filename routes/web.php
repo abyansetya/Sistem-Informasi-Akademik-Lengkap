@@ -45,4 +45,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/Kaprodi/Dashboard', [KaprodiController::class, 'dashboard'])->name('kaprodi.dashboard');
+    Route::get('/Kaprodi/JadwalKuliah', [KaprodiController::class, 'jadwalKuliah'])->name('kaprodi.jadwalKuliah');
+    Route::get('/Kaprodi/Mahasiswa', [KaprodiController::class, 'mahasiswa'])->name('kaprodi.mahasiswa');
+    Route::get('/Kaprodi/Monitoring', [KaprodiController::class, 'monitoringMataKuliah'])->name('kaprodi.monitoringMataKuliah');
+});
+
 require __DIR__.'/auth.php';

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class KaprodiController extends Controller
@@ -13,9 +14,44 @@ class KaprodiController extends Controller
      */
     public function index()
     {
-        return inertia::render('Kaprodi/Dashboard');
-    }
+        $user = Auth::user();
+        $roles = session('selected_role', 'default');
 
+        // Kirim role ke frontend
+        return Inertia::render('Kaprodi/Dashboard', [
+            'user' => $user,
+            'roles' => $roles
+        ]);
+    }
+    public function dashboard()
+    {
+        return Inertia::render('Kaprodi/Dashboard', [
+            // data untuk dashboard
+        ]);
+    }
+    
+    public function jadwalKuliah()
+    {
+        return Inertia::render('Kaprod/JadwalKuliah', [
+            'user' => auth()->user(),
+            'roles' => auth()->user()->roles
+        ]);
+    }
+    
+    public function mahasiswa()
+    {
+        return Inertia::render('Kaprodi/Mahasiswa', [
+            // data untuk mahasiswa
+        ]);
+    }
+    
+    public function monitoringMataKuliah()
+    {
+        return Inertia::render('Kaprodi/MonitoringMataKuliah', [
+            // data untuk monitoring mata kuliah
+        ]);
+    }
+    
     /**
      * Show the form for creating a new resource.
      */

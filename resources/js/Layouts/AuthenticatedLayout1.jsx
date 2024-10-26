@@ -108,28 +108,16 @@ function AuthenticatedLayout1({ header, children, role }) {
         } else if (roles.includes("Ketua Prodi")) {
             return (
                 <>
-                    <NavLink
-                    // href={route("kaprodi.index")}
-                    // active={route().current("kaprodi.index")}
-                    >
+                    <NavLink href={route("kaprodi.dashboard")} active={route().current("kaprodi.dashboard")}>
                         Dashboard
                     </NavLink>
-                    <NavLink
-                    // href={route("kelolaJadwal.index")}
-                    // active={route().current("kelolaJadwal.index")}
-                    >
+                    <NavLink href={route("kaprodi.jadwalKuliah")} active={route().current("kaprodi.jadwalKuliah")}>
                         Jadwal Kuliah
                     </NavLink>
-                    <NavLink
-                    // href={route("kelolaJadwal.index")}
-                    // active={route().current("kelolaJadwal.index")}
-                    >
+                    <NavLink href={route("kaprodi.mahasiswa")} active={route().current("kaprodi.mahasiswa")}>
                         Mahasiswa
                     </NavLink>
-                    <NavLink
-                    // href={route("kelolaJadwal.index")}
-                    // active={route().current("kelolaJadwal.index")}
-                    >
+                    <NavLink href={route("kaprodi.monitoringMataKuliah")} active={route().current("kaprodi.monitoringMataKuliah")}>
                         Monitoring Mata Kuliah
                     </NavLink>
                 </>
