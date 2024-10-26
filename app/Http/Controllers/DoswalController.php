@@ -13,6 +13,7 @@ class DoswalController extends Controller
      * Display a listing of the resource.
      */
     public function index()
+    
     {
         $user = Auth::user();
         $roles = session('selected_role', 'default');
@@ -24,6 +25,30 @@ class DoswalController extends Controller
         ]);
     }
 
+    public function mahasiswaPerwalian()
+    
+    {
+        // Kirim role ke frontend
+        return Inertia::render('Doswal/mahasiswaPerwalian', [
+
+        ]);
+    }
+    public function verifikasiIRS()
+    
+    {
+        // Kirim role ke frontend
+        return Inertia::render('Doswal/verifikasiIRS', [
+
+        ]);
+    }
+    public function statusPerkembangan()
+    
+    {
+        // Kirim role ke frontend
+        return Inertia::render('Doswal/statusPerkembangan', [
+
+        ]);
+    }
     /**
      * Show the form for creating a new resource.
      */
