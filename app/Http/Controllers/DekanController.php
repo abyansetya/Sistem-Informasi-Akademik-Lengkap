@@ -41,6 +41,18 @@ class DekanController extends Controller
             'ruangkelas' => $ruangKelas
         ]);
     }
+
+    public function jadwalKuliah()
+    {
+        $user = Auth::user();
+        $roles = session('selected_role', 'default');
+    
+    
+        return Inertia::render('Dekan/JadwalKuliah', [
+            'user' => $user,
+            'roles' => $roles,
+        ]);
+    }
     
 
     public function setujui($id)
