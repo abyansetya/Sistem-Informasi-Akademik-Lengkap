@@ -46,14 +46,11 @@ function JadwalKuliah({ user, roles, mataKuliah }) {
                         <h3 className="text-lg font-bold">{matkul.nama_mata_kuliah}</h3>
                         <p>SKS: {matkul.sks}</p>
                         <p>Semester: {matkul.semester}</p>
-                        <button
-                        onClick={() => {
-                            Inertia.visit(route('kaprodi.jadwalDetail', { id: matkul.id }));
-                        }}
-                        className="mt-4 px-4 py-2 rounded-lg font-bold bg-red-500 text-white hover:bg-green-700 transition-all duration-300 ease-in-out"
-                    >
-                        BELOM BISA
-                    </button>
+                        <button className="mt-4 px-4 py-2 rounded-lg font-bold bg-green-500 text-white hover:bg-green-700 transition-all duration-300 ease-in-out">
+    <Link href={route('kaprodi.jadwalDetail', { id: matkul.id })}>
+        ATUR MATAKULIAH
+    </Link>
+</button>
                     </div>
                 ))}
             </div>

@@ -4,7 +4,8 @@ import NavLink from "@/Components/NavLink";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import { Link, usePage } from "@inertiajs/react";
 import { useState } from "react";
-import LeftNavbar from "./LeftNavbar";
+// import LeftNavbar from "@/components/LeftNavbar";
+
 
 function AuthenticatedLayout1({ header, children, role }) {
     const user = usePage().props.auth.user;
@@ -25,8 +26,10 @@ function AuthenticatedLayout1({ header, children, role }) {
             return route("doswal.index");
         } else if (roles.includes("Ketua Prodi")) {
             return route("kaprodi.index");
+        } else {
+            return route("kaprodi.index")
         }
-        return route("dashboard"); // Default route jika tidak ada role yang sesuai
+       
     };
 
     // Menentukan menu berdasarkan role
@@ -35,8 +38,8 @@ function AuthenticatedLayout1({ header, children, role }) {
             return (
                 <>
                     <NavLink
-                        href={route("dekan.index")}
-                        active={route().current("dekan.index")}
+                        // href={route("dekan.index")}
+                        // active={route().current("dekan.index")}
                     >
                         Dashboard
                     </NavLink>
@@ -81,14 +84,14 @@ function AuthenticatedLayout1({ header, children, role }) {
             return (
                 <>
                     <NavLink
-                        href={route("bagianakademik.index")}
-                        active={route().current("bagianakademik.index")}
+                        // href={route("bagianakademik.index")}
+                        // active={route().current("bagianakademik.index")}
                     >
                         Dashboard
                     </NavLink>
                     <NavLink
-                        href={route("bagianakademik.KelolaRuang")}
-                        active={route().current("bagianakademik.KelolaRuang")}
+                        // href={route("bagianakademik.KelolaRuang")}
+                        // active={route().current("bagianakademik.KelolaRuang")}
                     >
                         Kelola Ruangan
                     </NavLink>
@@ -108,16 +111,24 @@ function AuthenticatedLayout1({ header, children, role }) {
         } else if (roles.includes("Ketua Prodi")) {
             return (
                 <>
-            <NavLink href={route("kaprodi.dashboard")} active={route().current("kaprodi.dashboard")}>
+            <NavLink 
+            href={route("kaprodi.index")} active={route().current("kaprodi.index")}
+            >
                 Dashboard
             </NavLink>
-            <NavLink href={route("kaprodi.jadwalKuliah")} active={route().current("kaprodi.jadwalKuliah")}>
+            <NavLink 
+            href={route("kaprodi.jadwalKuliah")} active={route().current("kaprodi.jadwalKuliah")}
+            >
                 Jadwal Kuliah
             </NavLink>
-            <NavLink href={route("kaprodi.mahasiswa")} active={route().current("kaprodi.mahasiswa")}>
+            <NavLink 
+            href={route("kaprodi.mahasiswa")} active={route().current("kaprodi.mahasiswa")}
+            >
                 Mahasiswa
             </NavLink>
-            <NavLink href={route("kaprodi.monitoringMataKuliah")} active={route().current("kaprodi.monitoringMataKuliah")}>
+            <NavLink 
+            href={route("kaprodi.monitoring")} active={route().current("kaprodi.monitoring")}
+            >
                 Monitoring Mata Kuliah
             </NavLink>
                 </>

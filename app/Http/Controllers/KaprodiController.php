@@ -48,9 +48,14 @@ class KaprodiController extends Controller
     }
     public function jadwalDetail($id)
     {
+        $user = Auth::user();
+        $roles = session('selected_role', 'default');
+
         $mataKuliah = DB::table('mata_kuliah')->where('id', $id)->first();
         
         return Inertia::render('Kaprodi/JadwalDetail', [
+            'user' => $user,
+            'roles' => $roles,
             'mataKuliah' => $mataKuliah,
         ]);
     }
@@ -66,7 +71,7 @@ class KaprodiController extends Controller
             'students' => $students,
         ]);
     }
-    public function monitoringMataKuliah()
+    public function monitoring()
     {
         $user = Auth::user();
         $roles = session('selected_role', 'default');
