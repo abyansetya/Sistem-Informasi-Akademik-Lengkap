@@ -29,14 +29,6 @@ class BagianAkademikController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function storeRuang(Request $request)
@@ -57,22 +49,6 @@ class BagianAkademikController extends Controller
 
         // Redirect kembali ke halaman kelola ruangan dengan pesan sukses
         return redirect()->back()->with('success', 'Ruangan baru berhasil ditambahkan');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(User $user)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(User $user)
-    {
-        //
     }
 
     /**
@@ -179,33 +155,41 @@ class BagianAkademikController extends Controller
     }
 
     public function destroyProgramStudi($id)
-    {
-        $programStudi = ProgramStudi::find($id);
-    
-        if ($programStudi) {
-            $programStudi->delete();  // Menghapus ruangan
-            return redirect()->back()->with('success', 'Program Studi berhasil dihapus');
-        } else {
-            return redirect()->back()->with('error', 'Program Studi tidak ditemukan');
-        }
+{
+    // Cari Program Studi berdasarkan ID
+    $programStudi = ProgramStudi::find($id);
+
+    if ($programStudi) {
+        // Hapus Program Studi jika ditemukan
+        $programStudi->delete();
+        return redirect()->back()->with('success', 'Program Studi berhasil dihapus');
+    } else {
+        return redirect()->back()->with('error', 'Program Studi tidak ditemukan');
     }
+}
 
-    public function storeAlokasi (Request $request){
+
+    public function storeAlokasi(Request $request)
+    {
+        // Validasi data yang diterima dari frontend
         $validatedData = $request->validate([
-            'program_studi_id' => 'required|exists:program_studi_id',
+            'program_studi_id' => 'required|integer',
             'ruang_kelas_id' => 'required|array',
-            'ruang_kelas_id.*' => 'exists:ruang_kelas_id',
+            'ruang_kelas_id.*' => 'integer',
         ]);
-
-        foreach($request->ruang_kelas_id as $ruangId){
-            AlokasiRuangan::created([
-                'program_studi_id'=> $validatedData['program_studi_id'],
+    
+        // Iterasi melalui setiap ruang_kelas_id yang diterima
+        foreach ($validatedData['ruang_kelas_id'] as $ruangId) {
+            $alokasiBaru = AlokasiRuangan::create([
+                'program_studi_id' => $validatedData['program_studi_id'],
                 'ruang_kelas_id' => $ruangId,
                 'status' => 'pending',
             ]);
         }
-        return redirect()->back()-with('success', 'ruangan berhasil di alokasikan');
+    
+        redirect()->back()->with('success', 'Alokasi berhasil ditambahkan');
     }
+    
 
     public function getAlokasi(){
         $alokasi = AlokasiRuangan::with('programStudi', 'ruangKelas')->get();
@@ -215,4 +199,43 @@ class BagianAkademikController extends Controller
             'ruangKelasData' => RuangKelas::all(),
         ]);
     }
+
+    public function updateAlokasi(Request $request, $id)
+{
+    // Validasi input
+    $validatedData = $request->validate([
+        'program_studi_id' => 'required|exists:program_studi,id',
+        'ruang_kelas_id' => 'required|array',
+        'ruang_kelas_id.*' => 'exists:ruang_kelas,id',
+    ]);
+
+    // Cari alokasi yang akan diupdate
+    $alokasi = AlokasiRuangan::find($id);
+
+    if ($alokasi) {
+        // Update program studi dan ruangan kelas
+        $alokasi->program_studi_id = $validatedData['program_studi_id'];
+        $alokasi->ruang_kelas_id = $validatedData['ruang_kelas_id'];
+        $alokasi->save();
+
+        return redirect()->back()->with('success', 'Alokasi berhasil diupdate');
+    } else {
+        return redirect()->back()->with('error', 'Alokasi tidak ditemukan');
+    }
+}
+
+public function destroyAlokasi($id)
+{
+    // Cari alokasi berdasarkan ID
+    $alokasi = AlokasiRuangan::find($id);
+
+    if ($alokasi) {
+        // Hapus alokasi
+        $alokasi->delete();
+        return redirect()->back()->with('success', 'Alokasi berhasil dihapus');
+    } else {
+        return redirect()->back()->with('error', 'Alokasi tidak ditemukan');
+    }
+}
+
 }
