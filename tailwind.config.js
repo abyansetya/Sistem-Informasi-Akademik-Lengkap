@@ -37,6 +37,7 @@ export default {
                     0: "#F8F5F5",
                     1: "#C8C8C8",
                     2: "#696B6E",
+                    3: "#FFF6F6"
                 },
             },
         },
