@@ -5,7 +5,6 @@ import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import { Link, usePage } from "@inertiajs/react";
 import { useState } from "react";
 
-
 function AuthenticatedLayout1({ header, children, role }) {
     const user = usePage().props.auth.user;
     const roles = role;
@@ -146,20 +145,20 @@ function AuthenticatedLayout1({ header, children, role }) {
             return (
                 <>
                     <NavLink
-                    // href={route("doswal.index")}
-                    // active={route().current("doswal.index")}
+                        href={route("doswal.index")}
+                        active={route().current("doswal.index")}
                     >
                         Dashboard
                     </NavLink>
                     <NavLink
-                    href={route("doswal.mahasiswaPerwalian")}
-                    active={route().current("doswal.mahasiswaPerwalian")}
+                        href={route("doswal.mahasiswaPerwalian")}
+                        active={route().current("doswal.mahasiswaPerwalian")}
                     >
                         Mahasiswa Perwalian
                     </NavLink>
                     <NavLink
-                    href={route("doswal.verifikasiIRS")}
-                    active={route().current("doswal.verifikasiIRS")}
+                        href={route("doswal.verifikasiIRS")}
+                        active={route().current("doswal.verifikasiIRS")}
                     >
                         Verifikasi IRS
                     </NavLink>
@@ -189,15 +188,19 @@ function AuthenticatedLayout1({ header, children, role }) {
 
                         <Dropdown.Content>
                             <Dropdown.Link
-                            href={route("doswal.statusPerkembangan")}
-                            active={route().current("doswal.statusPerkembangan")}
+                                href={route("doswal.statusPerkembangan")}
+                                active={route().current(
+                                    "doswal.statusPerkembangan"
+                                )}
                             >
                                 Status Perkembangan Mahasiswa
                             </Dropdown.Link>
                             <Dropdown.Link
-                            // href={route("logout")}
-                            // method="post"
-                            // as="button"
+                                href={route("doswal.monitoringMK")}
+                                active={route().current("doswal.monitoringMK")}
+                                // href={route("logout")}
+                                // method="post"
+                                // as="button"
                             >
                                 Monitoring Mata Kuliah
                             </Dropdown.Link>
