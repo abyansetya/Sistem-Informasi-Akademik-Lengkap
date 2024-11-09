@@ -21,8 +21,8 @@ class RuangKelas extends Model
         return $this->belongsTo(ProgramStudi::class, 'program_studi_id', 'kode_program_studi');
     }
 
-    public function alokasi_ruangan()
+    public function alokasiRuangan()
     {
-    return $this->hasMany(alokasi_ruangan::class);
+        return $this->hasMany(AlokasiRuangan::class, 'ruang_kelas_id', 'id');
     }
 }

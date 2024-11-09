@@ -47,7 +47,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/BagianAkademik/KelolaProgramStudi/{id}', [BagianAkademikController::class, 'destroyProgramStudi'])->name('bagianakademik.destroyProgramStudi');
     Route::get('/BagianAkademik/AlokasiRuangan',[BagianAkademikController::class, 'getAlokasi'])->middleware(CheckRole::class.':Bagian Akademik')->name('bagianakademik.AlokasiRuangan');
     Route::get('/doswal/mahasiswaPerwalian', [MhsController::class, 'mahasiswaPerwalian'])->name('mahasiswa.perwalian');
-    
+    Route::post('/BagianAkademik/AlokasiRuangan/store', [BagianAkademikController::class, 'storeAlokasi'])->name('bagianakademik.storeAlokasi');
+    Route::put('/BagianAkademik/AlokasiRuangan/{id}', [BagianAkademikController::class, 'updateAlokasi'])->name('bagianakademik.updateAlokasi');
+    Route::delete('/BagianAkademik/AlokasiRuangan/{id}', [BagianAkademikController::class, 'destroyAlokasi'])->name('bagianakademik.destroyAlokasi');
 });
 
 Route::middleware('auth')->group(function () {
