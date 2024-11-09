@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React from "react";
 import { PieChart, Pie, Cell, Tooltip } from "recharts";
 
 export const COLORS = ["#697DEE", "#FF8787", "#FFBB28", "#FF8042"];
@@ -30,16 +30,16 @@ const renderCustomizedLabel = ({
     );
 };
 
-export function Chart({ data }) {
+export function Chart({ data, width = 350, height = 350 }) {
     return (
-        <PieChart width={350} height={350}>
+        <PieChart width={width} height={height}>
             <Pie
                 data={data}
-                cx={170}
-                cy={170}
+                cx={width / 2}
+                cy={height / 2}
                 labelLine={false}
                 label={renderCustomizedLabel}
-                outerRadius={150}
+                outerRadius={Math.min(width, height) * 0.4}
                 fill="#8884d8"
                 dataKey="value"
             >

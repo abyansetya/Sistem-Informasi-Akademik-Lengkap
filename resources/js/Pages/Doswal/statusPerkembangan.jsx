@@ -2,9 +2,9 @@ import React from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout1";
 import { Head } from "@inertiajs/react";
 
-function statusPerkembangan({ user }) {
+function statusPerkembangan({ user, roles }) {
     return (
-        <AuthenticatedLayout role="statusPerkembangan">
+        <AuthenticatedLayout role={roles}>
             <Head title="Status Perkembangan" />
             <div className="py-12 px-4">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8 font-poppins">
@@ -21,7 +21,7 @@ function statusPerkembangan({ user }) {
                                 <p className="text-[24px] font-bold">
                                     Mahasiswa Wali
                                 </p>
-                                <p className="text-[12px] text-gray-500">
+                                <p className="text-[12px] text-cgrey-2">
                                     Semester ganjil 2024/2025
                                 </p>
                             </div>
@@ -97,7 +97,7 @@ function statusPerkembangan({ user }) {
                         {/* Table Mahasiswa */}
                         <div className="overflow-x-auto pr-[90px] pl-[90px]">
                             <div className="overflow-hidden rounded-lg shadow-lg">
-                                <table className="min-w-full table-auto bg-white rounded-lg border-separate border-spacing-0">
+                                <table className="min-w-full table-auto bg-cgrey-0 rounded-sm border-separate border-spacing-0">
                                     <thead>
                                         <tr>
                                             <th className="px-4 py-2 font-normal text-[15px]">
