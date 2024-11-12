@@ -49,6 +49,14 @@ class DoswalController extends Controller
 
         ]);
     }
+    public function monitoringMK()
+    
+    {
+        // Kirim role ke frontend
+        return Inertia::render('Doswal/monitoringMK', [
+
+        ]);
+    }
     /**
      * Show the form for creating a new resource.
      */

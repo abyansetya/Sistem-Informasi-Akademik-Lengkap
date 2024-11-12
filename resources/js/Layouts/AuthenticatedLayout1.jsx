@@ -196,9 +196,11 @@ function AuthenticatedLayout1({ header, children, role }) {
                                 Status Perkembangan Mahasiswa
                             </Dropdown.Link>
                             <Dropdown.Link
-                            // href={route("logout")}
-                            // method="post"
-                            // as="button"
+                                href={route("doswal.monitoringMK")}
+                                active={route().current("doswal.monitoringMK")}
+                                // href={route("logout")}
+                                // method="post"
+                                // as="button"
                             >
                                 Monitoring Mata Kuliah
                             </Dropdown.Link>
