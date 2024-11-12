@@ -1,17 +1,73 @@
-import React from "react";
+import React, { useState } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout1";
-import { Head } from "@inertiajs/react";
-import axios from 'axios';
+import { Head, Link, useForm } from "@inertiajs/react";
+import axios from "axios";
+
 
 function Mahasiswa({ user, roles, students }) {
-    // Toggle Status function
+    // Inertia's useForm for handling form submissions
+    const { post } = useForm();
+    const [statusIRS, setStatusIRS] = useState(
+        students.map((student) => ({
+            id: student.id,
+            status: student.status_irs,
+        }))
+    );
+
+    // Toggle Status function using post
     const toggleStatus = async (studentId) => {
         try {
-            await axios.post(`/kaprodi/update-status-irs/${studentId}`);
-            window.location.reload(); // Refresh the page to show updated status
+            // Mengambil status saat ini dari student
+            const currentStatus = statusIRS.find((status) => status.id === studentId)?.status;
+            const newStatus = currentStatus === "Setuju" ? "Belum Setuju" : "Setuju";
+    
+            // Kirim status baru ke server menggunakan axios
+            const response = await axios.post(`/Kaprodi/${studentId}/acc`, { status_irs: newStatus });
+    
+            // Cek jika respons sukses, lalu update status IRS di client-side
+            if (response.status === 200) {
+                setStatusIRS((prevStatus) =>
+                    prevStatus.map((status) =>
+                        status.id === studentId ? { ...status, status: newStatus } : status
+                    )
+                );
+                console.log("Status berhasil diperbarui:", response.data.message);
+            } else {
+                console.warn("Status berhasil diperbarui, tetapi respons tidak sesuai:", response);
+            }
         } catch (error) {
-            console.error("Failed to update status:", error);
+            // Memastikan error ditangkap secara detail, termasuk respons dari server
+            if (error.response) {
+                console.error("Gagal memperbarui status:", error.response.data.message || error.message);
+            } else {
+                console.error("Gagal memperbarui status:", error.message);
+            }
         }
+    };
+    
+
+    // PaginationLinks component for pagination
+    const PaginationLinks = () => {
+        // Check if students.links exists before using .map
+        if (!students.links) return null;
+
+        return (
+            <div className="flex justify-center mt-4">
+                {students.links.map((link, index) => (
+                    <Link
+                        key={index} // Adding unique key
+                        href={link.url ? link.url : "#"}
+                        dangerouslySetInnerHTML={{ __html: link.label }}
+                        className={`mx-1 px-3 py-1 border rounded ${
+                            link.active
+                                ? "bg-blue-500 text-white"
+                                : "bg-white text-black"
+                        }`}
+                        preserveScroll
+                    />
+                ))}
+            </div>
+        );
     };
 
     return (
@@ -20,8 +76,8 @@ function Mahasiswa({ user, roles, students }) {
 
             <div className="py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg p-6">
-                        <h2 className="text-xl font-bold mb-6 text-black dark:text-black">Daftar Mahasiswa (tabelbaru)</h2>
+                    <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg p-1">
+                        <h2 className="text-xl font-bold mb-6 text-black dark:text-black">Daftar Mahasiswa</h2>
 
                         {/* Search Button */}
                         <div className="flex justify-end mb-4">
@@ -51,19 +107,26 @@ function Mahasiswa({ user, roles, students }) {
                                             <td className="px-4 py-2 border-b">{student.nim}</td>
                                             <td className="px-4 py-2 border-b">{student.angkatan}</td>
                                             <td className="px-4 py-2 border-b flex items-center">
-                                                <span
-                                                    onClick={() => toggleStatus(student.id)}
-                                                    className={`cursor-pointer px-3 py-1 rounded-full text-sm font-semibold ${student.status_irs === "Setuju" ? "bg-green-500" : "bg-red-500"} text-white`}
-                                                >
-                                                    {student.status_irs}
-                                                </span>
-                                                <a href={`/cek-irs/${student.nim}`} className="ml-3 text-blue-600 hover:underline">Cek IRS</a>
+                                            <button
+                                                onClick={() => toggleStatus(student.id)}
+                                                className={`cursor-pointer px-3 py-1 rounded-full text-sm font-semibold ${
+                                                    statusIRS.find((status) => status.id === student.id)?.status === "Setuju"
+                                                        ? "bg-blue-500"
+                                                        : "bg-red-500"
+                                                } text-white`}
+                                            >
+                                                {statusIRS.find((status) => status.id === student.id)?.status === "Setuju"
+                                                    ? "Setuju"
+                                                    : "notSet"}
+                                            </button>
+                                                <Link href={`/cek-irs/${student.nim}`} className="ml-3 text-blue-600 hover:underline">Cek IRS</Link>
                                             </td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
                         </div>
+                        <PaginationLinks />
                     </div>
                 </div>
             </div>

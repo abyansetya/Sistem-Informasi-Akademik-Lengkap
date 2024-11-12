@@ -41,7 +41,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/Kaprodi/jadwalDetail/{id}', [KaprodiController::class, 'jadwalDetail'])->middleware(CheckRole::class.':Ketua Prodi')->name('kaprodi.jadwalDetail');
     Route::get('/Kaprodi/mahasiswa', [KaprodiController::class, 'mahasiswa'])->middleware(CheckRole::class.':Ketua Prodi')->name('kaprodi.mahasiswa');
     Route::get('/Kaprodi/monitoring', [KaprodiController::class, 'monitoring'])->middleware(CheckRole::class.':Ketua Prodi')->name('kaprodi.monitoring');
-    Route::post('/kaprodi/update-status-irs/{studentId}', [KaprodiController::class, 'updateStatusIRS']);
+    Route::post('/Kaprodi/{studentId}/acc', [KaprodiController::class, 'acc'])->name('Kaprodi.acc');
+
+
+    
     Route::get('/PilihRole', [PilihRoleController::class, 'index'])->name('pilihrole.index');
     Route::post('/PilihRole/choose', [PilihRoleController::class, 'choose'])->name('pilihrole.choose');
     Route::get('/BagianAkademik/KelolaRuang',[BagianAkademikController::class, 'KelolaRuang'])->middleware(CheckRole::class.':Bagian Akademik')->name('bagianakademik.KelolaRuang');

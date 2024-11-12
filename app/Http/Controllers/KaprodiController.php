@@ -63,14 +63,29 @@ class KaprodiController extends Controller
     {
         $user = Auth::user();
         $roles = session('selected_role', 'default');
-        $students = DB::table('students')->select('nama', 'nim', 'angkatan', 'status_irs')->get();
-    
+        $students = DB::table('students')->select('id', 'nama', 'nim', 'angkatan', 'status_irs')->get();
+
         return Inertia::render('Kaprodi/Mahasiswa', [
             'user' => $user,
             'roles' => $roles,
             'students' => $students,
         ]);
     }
+
+    // Metode untuk menyetujui IRS mahasiswa berdasarkan ID
+    public function acc($Studentid)
+    {
+        $student = Student::find($Studentid);
+        if ($student) {
+            $student->status_irs = $student->status_irs === 'Setuju' ? 'Belum Setuju' : 'Setuju';
+            $student->save();
+    
+            return response()->json(['message' => 'Status berhasil diperbarui']);
+        } else {
+            return response()->json(['message' => 'Student tidak ditemukan'], 404);
+        }
+    }
+
     public function monitoring()
     {
         $user = Auth::user();
@@ -81,17 +96,6 @@ class KaprodiController extends Controller
         ]);
     }
     
-    public function updateStatusIRS(Request $request, $studentId)
-    {
-        // Find the student by ID
-        $student = Student::findOrFail($studentId);
-        
-        // Toggle the IRS status
-        $student->status_irs = $student->status_irs === 'Setuju' ? 'NotSet' : 'Setuju';
-        $student->save();
-
-        return response()->json(['message' => 'Status updated successfully']);
-    }
 
     /**
      * Show the form for creating a new resource.
