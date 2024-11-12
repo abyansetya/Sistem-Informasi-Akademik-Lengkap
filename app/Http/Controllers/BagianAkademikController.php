@@ -155,18 +155,18 @@ class BagianAkademikController extends Controller
     }
 
     public function destroyProgramStudi($id)
-{
-    // Cari Program Studi berdasarkan ID
-    $programStudi = ProgramStudi::find($id);
-
-    if ($programStudi) {
-        // Hapus Program Studi jika ditemukan
-        $programStudi->delete();
-        return redirect()->back()->with('success', 'Program Studi berhasil dihapus');
-    } else {
-        return redirect()->back()->with('error', 'Program Studi tidak ditemukan');
+    {
+        $programStudi = ProgramStudi::find($id);
+        // dd($programStudi); // Add this for debugging
+    
+        if ($programStudi) {
+            $programStudi->delete();
+            return redirect()->back()->with('success', 'Program Studi berhasil dihapus');
+        } else {
+            return redirect()->back()->with('error', 'Program Studi tidak ditemukan');
+        }
     }
-}
+    
 
 
     public function storeAlokasi(Request $request)

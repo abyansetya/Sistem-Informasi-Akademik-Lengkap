@@ -39,4 +39,8 @@ class Mahasiswa extends Model
     {
         return $this->belongsTo(User::class, 'nim', 'nim_nip');
     }
+
+    public function prodi(){
+        return $this->belongsTo(ProgramStudi::class, 'program_studi_id');
+    }
 }
