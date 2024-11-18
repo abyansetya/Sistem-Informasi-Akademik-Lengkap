@@ -5,24 +5,27 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class RuangKelas extends Model
+class Ruang extends Model
 {
     use HasFactory;
 
     // Jika nama tabel berbeda dengan default Laravel (plural dari nama model),
     // kamu perlu mendefinisikannya secara eksplisit. Karena tabelmu adalah `ruang_kelas`, tambahkan:
-    protected $table = 'ruang_kelas';
+    protected $table = 'ruang';
+
 
     // Tentukan kolom yang boleh diisi menggunakan mass assignment
     protected $fillable = ['nama_ruang', 'gedung', 'kuota'];
 
     public function programStudi()
     {
-        return $this->belongsTo(ProgramStudi::class, 'program_studi_id', 'kode_program_studi');
+        return $this->belongsTo(ProgramStudi::class, 'kode_prodi', 'kode_prodi');
     }
 
-    public function alokasiRuangan()
+    public function jadwal()
     {
-        return $this->hasMany(AlokasiRuangan::class, 'ruang_kelas_id', 'id');
+        return $this->hasMany(Jadwal::class, 'nama_ruang', 'nama_ruang');
     }
+    
+
 }

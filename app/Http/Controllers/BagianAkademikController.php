@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AlokasiRuangan;
+
+use App\Models\Dosenpegawai;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\RuangKelas;
 use App\Models\ProgramStudi;
+use App\Models\Ruang;
 use Illuminate\Support\Facades\Auth;
 
 class BagianAkademikController extends Controller
@@ -20,11 +22,12 @@ class BagianAkademikController extends Controller
                // Ambil role pengguna
         $user = Auth::user();
         $roles = session('selected_role', 'default');
-
+        $dosen = Dosenpegawai::where('user_id', $user->user_id)->first();
         // Kirim role ke frontend
         return Inertia::render('BagianAkademik/Dashboard', [
             'user' => $user,
-            'roles' => $roles
+            'roles' => $roles,
+            'dosen' => $dosen
         ]);
     }
 
@@ -41,7 +44,7 @@ class BagianAkademikController extends Controller
         ]);
 
         // Menyimpan data ke tabel RuangKelas
-        RuangKelas::create([
+        Ruang::create([
             'nama_ruang' => $validatedData['nama_ruang'],
             'gedung' => $validatedData['gedung'],
             'kuota' => $validatedData['kuota'],
@@ -64,7 +67,7 @@ class BagianAkademikController extends Controller
     ]);
 
     // Cari data ruangan yang akan diupdate
-    $ruangKelas = RuangKelas::find($id);
+    $ruangKelas = Ruang::find($id);
 
     if ($ruangKelas) {
         // Update data
@@ -85,7 +88,7 @@ class BagianAkademikController extends Controller
      */
     public function destroyRuang($id)
     {
-        $ruangKelas = RuangKelas::find($id);
+        $ruangKelas = Ruang::find($id);
     
         if ($ruangKelas) {
             $ruangKelas->delete();  // Menghapus ruangan
@@ -97,7 +100,7 @@ class BagianAkademikController extends Controller
     
     public function KelolaRuang(User $user)
     {
-        $ruangKelas = RuangKelas::paginate(15);
+        $ruangKelas = Ruang::paginate(15);
         return inertia::render('BagianAkademik/KelolaRuang',['ruangKelas' => $ruangKelas]);
     }
     
@@ -111,16 +114,14 @@ class BagianAkademikController extends Controller
     {
         // Validasi data input dari form
         $validatedData = $request->validate([
-            'kode_program_studi' => 'required|string|max:255',
-            'nama_program_studi' => 'required|string|max:255',
-            'fakultas' => 'required|string|max:255',
+            'kode_prodi' => 'required|string|max:255',
+            'nama_prodi' => 'required|string|max:255',
         ]);
 
         // Menyimpan data ke tabel ProgramStudi
         ProgramStudi::create([
-            'kode_program_studi' => $validatedData['kode_program_studi'],
-            'nama_program_studi' => $validatedData['nama_program_studi'],
-            'fakultas' => $validatedData['fakultas'],
+            'kode_prodi' => $validatedData['kode_prodi'],
+            'nama_prodi' => $validatedData['nama_prodi'],
         ]);
 
         // Redirect kembali ke halaman kelola program studi dengan pesan sukses
@@ -131,9 +132,8 @@ class BagianAkademikController extends Controller
     {
     // Validasi data
     $validatedData = $request->validate([
-        'kode_program_studi' => 'required|string|max:255',
-        'nama_program_studi' => 'required|string|max:255',
-        'fakultas' => 'required|string|max:255',
+        'kode_prodi' => 'required|string|max:255',
+        'nama_prodi' => 'required|string|max:255',
     ]);
 
     // Cari data ruangan yang akan diupdate
@@ -142,9 +142,8 @@ class BagianAkademikController extends Controller
     if ($programStudi) {
         // Update data
         $programStudi->update([
-            'kode_program_studi' => $validatedData['kode_program_studi'],
-            'nama_program_studi' => $validatedData['nama_program_studi'],
-            'fakultas' => $validatedData['fakultas'],
+            'kode_prodi' => $validatedData['kode_prodi'],
+            'nama_prodi' => $validatedData['nama_prodi'],
         ]);
 
         // Redirect kembali dengan pesan sukses
@@ -180,7 +179,7 @@ class BagianAkademikController extends Controller
     
         // Iterasi melalui setiap ruang_kelas_id yang diterima
         foreach ($validatedData['ruang_kelas_id'] as $ruangId) {
-            $alokasiBaru = AlokasiRuangan::create([
+            $alokasiBaru = Ruang::create([
                 'program_studi_id' => $validatedData['program_studi_id'],
                 'ruang_kelas_id' => $ruangId,
                 'status' => 'pending',
@@ -192,11 +191,11 @@ class BagianAkademikController extends Controller
     
 
     public function getAlokasi(){
-        $alokasi = AlokasiRuangan::with('programStudi', 'ruangKelas')->get();
+        $alokasi = Ruang::with('programStudi')->get();
         return Inertia::render('BagianAkademik/AlokasiRuangan', [
             'alokasiData' => $alokasi,
             'programStudiData' => ProgramStudi::all(),
-            'ruangKelasData' => RuangKelas::all(),
+            'ruangKelasData' => Ruang::all(),
         ]);
     }
 
@@ -210,7 +209,7 @@ class BagianAkademikController extends Controller
     ]);
 
     // Cari alokasi yang akan diupdate
-    $alokasi = AlokasiRuangan::find($id);
+    $alokasi = Ruang::find($id);
 
     if ($alokasi) {
         // Update program studi dan ruangan kelas
@@ -227,7 +226,7 @@ class BagianAkademikController extends Controller
 public function destroyAlokasi($id)
 {
     // Cari alokasi berdasarkan ID
-    $alokasi = AlokasiRuangan::find($id);
+    $alokasi = Ruang::find($id);
 
     if ($alokasi) {
         // Hapus alokasi

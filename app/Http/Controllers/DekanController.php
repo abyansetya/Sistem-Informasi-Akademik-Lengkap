@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Models\Dosenpegawai;
+use App\Models\Ruang;
 use App\Models\RuangKelas;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -19,26 +21,33 @@ class DekanController extends Controller
         // Ambil role pengguna
         $user = Auth::user();
         $roles = session('selected_role', 'default');
+        $dosen = Dosenpegawai::where('user_id', $user->user_id)->first();
 
         // Kirim role ke frontend
         return Inertia::render('Dekan/Dashboard', [
             'user' => $user,
-            'roles' => $roles
+            'roles' => $roles,
+            'dosen' => $dosen
         ]);
     }
 
     public function kelolaruang()
     {
+
         $user = Auth::user();
         $roles = session('selected_role', 'default');
+        $dosen = Dosenpegawai::where('user_id', $user->user_id)->first();
+        // Eager load program studi dari relasi programStudi    
+        $ruangKelas = Ruang::with('programStudi')
+        ->where('status', 'onprocess')
+        ->paginate(15);
     
-        // Eager load program studi dari relasi programStudi
-        $ruangKelas = RuangKelas::with('programStudi')->paginate(15);
-    
+
         return Inertia::render('Dekan/KelolaRuang', [
             'user' => $user,
             'roles' => $roles,
-            'ruangkelas' => $ruangKelas
+            'ruangkelas' => $ruangKelas,
+            'dosen' => $dosen
         ]);
     }
 
@@ -46,11 +55,13 @@ class DekanController extends Controller
     {
         $user = Auth::user();
         $roles = session('selected_role', 'default');
+        $dosen = Dosenpegawai::where('user_id', $user->user_id)->first();
     
     
         return Inertia::render('Dekan/JadwalKuliah', [
             'user' => $user,
             'roles' => $roles,
+            'dosen' => $dosen
         ]);
     }
     
@@ -58,7 +69,7 @@ class DekanController extends Controller
     public function setujui($id)
     {
         // Cari ruang kelas berdasarkan ID
-        $ruangKelas = RuangKelas::findOrFail($id);
+        $ruangKelas = Ruang::findOrFail($id);
     
         // Ubah status menjadi 'Disetujui'
         $ruangKelas->status = 'Disetujui';

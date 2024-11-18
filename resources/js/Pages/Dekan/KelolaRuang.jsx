@@ -2,7 +2,7 @@ import AuthenticatedLayout1 from "@/Layouts/AuthenticatedLayout1";
 import { Head, Link, useForm } from "@inertiajs/react";
 import React, { useState } from "react";
 
-export default function KelolaRuang({ user, roles, ruangkelas }) {
+export default function KelolaRuang({ user, roles, ruangkelas, dosen }) {
     const { post } = useForm();
     const [statusRuang, setStatusRuang] = useState(
         ruangkelas.data.map((ruang) => ({
@@ -63,9 +63,11 @@ export default function KelolaRuang({ user, roles, ruangkelas }) {
                             className="w-[120px] self-center mt-4"
                         />
                         <div className="items-center flex flex-col mt-4 w-full">
-                            <p className="font-bold text-[18px]">{user.name}</p>
+                            <p className="font-bold text-[18px]">
+                                {dosen.Name}
+                            </p>
                             <p className="text-cgrey-2 text-[13px]">
-                                NIP. {user.NIM_NIP}
+                                NIP. {dosen.NIP}
                             </p>
                         </div>
                     </div>
@@ -90,9 +92,6 @@ export default function KelolaRuang({ user, roles, ruangkelas }) {
                                 <thead>
                                     <tr className="bg-gray-100 text-black uppercase leading-normal">
                                         <th className="py-3 px-3 border-none text-center">
-                                            ID
-                                        </th>
-                                        <th className="py-3 px-3 border-none text-center">
                                             Nama Ruang
                                         </th>
                                         <th className="py-3 px-3 border-none text-center">
@@ -112,12 +111,9 @@ export default function KelolaRuang({ user, roles, ruangkelas }) {
                                 <tbody className="text-gray-600 border-none font-light">
                                     {ruangkelas.data.map((ruang) => (
                                         <tr
-                                            key={ruang.id}
+                                            key={ruang.nama_ruang}
                                             className="border-b border-none hover:bg-gray-50"
                                         >
-                                            <td className="py-2 px-2 border-none text-center">
-                                                {ruang.id}
-                                            </td>
                                             <td className="py-2 px-2 border-none text-center">
                                                 {ruang.nama_ruang}
                                             </td>

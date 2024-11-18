@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\RuangKelas>
  */
-class RuangKelasFactory extends Factory
+class RuangFactory extends Factory
 {
     // Static array untuk menyimpan ruang kelas yang belum digunakan
     protected static $ruangKelasAvailable = ['101', '102', '201', '202', '301', '302'];
@@ -20,18 +20,18 @@ class RuangKelasFactory extends Factory
     public function definition(): array
     {
         // Set gedung hanya 'A'
-        $gedung = 'K';
+        $gedung = 'I';
 
         // Pilih salah satu ruang kelas dari daftar yang tersedia dan hapus setelah dipilih
-        $namaRuang = array_shift(self::$ruangKelasAvailable);
+        $nama_ruang = array_shift(self::$ruangKelasAvailable);
         
         // Pastikan factory tidak dibuat jika ruang kelas sudah habis
-        if (!$namaRuang) {
+        if (!$nama_ruang) {
             throw new \Exception("Semua ruang kelas sudah digunakan.");
         }
 
         return [
-            'nama_ruang' => $gedung . $namaRuang,
+            'nama_ruang' => $gedung . $nama_ruang,
             'gedung' => $gedung,
             'kuota' => $this->faker->numberBetween(40, 50), // random kuota antara 40 dan 50
         ];

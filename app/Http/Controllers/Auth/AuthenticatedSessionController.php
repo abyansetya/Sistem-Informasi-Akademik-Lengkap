@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -34,8 +35,11 @@ class AuthenticatedSessionController extends Controller
     
         // Cek role pengguna dan arahkan ke dashboard yang sesuai
         $user = Auth::user();
-        $roles = $user->roles()->pluck('name'); // Ambil nama role pengguna
-
+        $roles = DB::table('roles')
+                    ->join('user_roles', 'roles.role_id', '=', 'user_roles.role_id')
+                    ->where('user_roles.user_id', '=', $user->user_id)
+                    ->pluck('roles.name');
+        
 
         if($roles->count() > 1){
             return redirect()->intended(route('pilihrole.index'));
@@ -44,7 +48,6 @@ class AuthenticatedSessionController extends Controller
         // Jika hanya ada 1 role, simpan role ke dalam session
         $selectedRole = $roles->first();
         session(['selected_role' => $selectedRole]);
-
         // Cek role dan arahkan sesuai
         if ($selectedRole === 'Mahasiswa') {
             return redirect()->intended(route('mhs.index')); 
@@ -59,7 +62,7 @@ class AuthenticatedSessionController extends Controller
         }
 
         // Jika tidak ada role yang sesuai, arahkan ke halaman default
-        return redirect('/');
+        // return redirect('/');
     }
     
     

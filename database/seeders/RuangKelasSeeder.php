@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Ruang;
 use Illuminate\Database\Seeder;
-use App\Models\RuangKelas;
+
 
 class RuangKelasSeeder extends Seeder
 {
@@ -13,7 +14,7 @@ class RuangKelasSeeder extends Seeder
     public function run(): void
     {
         // Generate 22 rooms, 2 for each building A to K
-        RuangKelas::factory()->count(6)->create();
+        Ruang::factory()->count(6)->create();
 
     }
 }

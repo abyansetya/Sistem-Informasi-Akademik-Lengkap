@@ -12,12 +12,14 @@ class MataKuliah extends Model
     protected $table = 'mata_kuliah';
 
     protected $fillable = [
-        'kode_mata_kuliah', 
-        'nama_mata_kuliah', 
+        'kode_mk', 
+        'Name', 
         'sks', 
         'semester', 
-        'prioritas_semester', 
-        'program_studi_id'
+        'prioritas_semester',
+        'kode_prodi', 
+        'created_at',
+        'updated_at'
     ];
 
     /**
@@ -27,6 +29,16 @@ class MataKuliah extends Model
      */
     public function programStudi()
     {
-        return $this->belongsTo(ProgramStudi::class, 'program_studi_id', 'kode_program_studi');
+        return $this->belongsTo(ProgramStudi::class, 'kode_prodi', 'kode_prodi');
+    }
+
+    public function dosen()
+    {
+        return $this->hasMany(DosenMk::class, 'kode_mk', 'kode_mk');
+    }
+
+    public function jadwal()
+    {
+        return $this->hasMany(Jadwal::class, 'kode_mk', 'kode_mk');
     }
 }

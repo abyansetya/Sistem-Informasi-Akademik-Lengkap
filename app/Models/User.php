@@ -15,15 +15,16 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        'name', // Changed from 'name' to 'nama' to match your table
-        'email',
-        'password',
-        'NIM_NIP',
-        'alamat',
-        'telepon',
-        'status',
-    ];
+    // protected $fillable = [
+    //     'name', // Changed from 'name' to 'nama' to match your table
+    //     'email',
+    //     'password',
+    //     'NIM_NIP',
+    //     'alamat',
+    //     'telepon',
+    //     'status',
+    // ];
+    protected $primaryKey = 'user_id';
 
     /**
      * The attributes that should be hidden for serialization.
@@ -52,4 +53,11 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Role::class, 'user_roles', 'user_id', 'role_id');
     }
+
+    public function dosenPegawai()
+    {
+    return $this->hasOne(DosenPegawai::class, 'user_id', 'user_id');
+    }
+
+    
 }

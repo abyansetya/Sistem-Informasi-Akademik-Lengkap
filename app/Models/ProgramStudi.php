@@ -11,14 +11,14 @@ class ProgramStudi extends Model
 
     protected $table = 'program_studi';
 
-    protected $primaryKey = 'kode_program_studi'; // Menentukan primary key
+    protected $primaryKey = 'prodi_id'; // Menentukan primary key
     public $incrementing = false; // Menonaktifkan auto-increment jika primary key bukan integer
     protected $keyType = 'string'; // Tipe data primary key
 
     protected $fillable = [
-        'kode_program_studi', 
-        'nama_program_studi', 
-        'fakultas'
+        'prodi_id',
+        'kode_prodi', 
+        'nama_prodi'
     ];
 
     /**
@@ -28,7 +28,7 @@ class ProgramStudi extends Model
      */
     public function mataKuliah()
     {
-        return $this->hasMany(MataKuliah::class, 'program_studi_id', 'kode_program_studi');
+        return $this->hasMany(MataKuliah::class, 'kode_prodi', 'kode_prodi');
     }
 
     /**
@@ -38,17 +38,20 @@ class ProgramStudi extends Model
      */
     public function ruangKelas()
     {
-        return $this->hasMany(RuangKelas::class, 'program_studi_id', 'kode_program_studi');
+        return $this->hasMany(Ruang::class, 'kode_prodi', 'kode_prodi');
     }
 
-    public function alokasiRuangan()
-    {
-        return $this->hasMany(AlokasiRuangan::class, 'program_studi_id', 'kode_program_studi');
-    }
 
     public function mahasiswa()
     {
-        return $this->hasMany(Mahasiswa::class, 'program_studi_id', 'kode_program_studi');
+        return $this->hasMany(Mahasiswa::class, 'kode_prodi', 'kode_prodi');
     }
+
+    public function dosenPegawai()
+    {
+        return $this->hasMany(Dosenpegawai::class, 'kode_prodi', 'kode_prodi');
+    }
+
+
 
 }

@@ -7,11 +7,11 @@ import {
     dataProgressRuangKelas,
 } from "@/Constants/ChartData";
 
-function Dashboard({ user, roles }) {
+function Dashboard({ user, roles, dosen }) {
     const role = roles.length > 0 ? roles : "No role available";
 
     return (
-        <AuthenticatedLayout role={roles}>
+        <AuthenticatedLayout role={roles} dosen={dosen}>
             <Head title="Dashboard" />
             <div className="mx-auto max-w-7xl sm:px-6 lg:px-8 font-poppins">
                 <div className="flex border rounded-[15px] shadow-lg shadow-gray-500/50 mt-6 p-6 items-center gap-[20px]">
@@ -23,9 +23,11 @@ function Dashboard({ user, roles }) {
                             className="w-[120px] self-center mt-4"
                         />
                         <div className="items-center flex flex-col mt-4 w-full">
-                            <p className="font-bold text-[18px]">{user.name}</p>
+                            <p className="font-bold text-[18px]">
+                                {dosen.Name}
+                            </p>
                             <p className="text-cgrey-2 text-[13px]">
-                                NIP. {user.NIM_NIP}
+                                NIP. {dosen.NIP}
                             </p>
                         </div>
                     </div>
