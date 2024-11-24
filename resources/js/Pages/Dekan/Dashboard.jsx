@@ -1,6 +1,6 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout1";
 import { Head } from "@inertiajs/react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Chart, COLORS } from "@/Components/piechart";
 import {
     dataPersetujuanDekan,
@@ -8,6 +8,22 @@ import {
 } from "@/Constants/ChartData";
 
 function Dashboard({ user, roles, dosen }) {
+    const [persetujuanRuangdata, setPertesetujanRuangData] = useState([]);
+    const [progressRuangdata, setprogressRuangdata] = useState([]);
+
+    useEffect(() => {
+        // Fetch data dari backend
+        fetch("/ChartData/persetujuanRuang")
+            .then((response) => response.json())
+            .then((data) => {
+                setPertesetujanRuangData(data.dataPersetujuanDekan);
+            });
+        fetch("/ChartData/progressRuang")
+            .then((response) => response.json())
+            .then((data) => {
+                setprogressRuangdata(data.dataProgressRuang);
+            });
+    }, []);
     const role = roles.length > 0 ? roles : "No role available";
 
     return (
@@ -43,14 +59,14 @@ function Dashboard({ user, roles, dosen }) {
                 <div className="flex justify-between gap-[10px]">
                     <div className="flex border flex-col p-6 rounded-[15px] shadow-lg shadow-gray-500/50 mt-6 w-[50%]">
                         <h1 className="font-bold text-[20px]">
-                            Persetujuan Dekan
+                            Persetujuan Ruang Kelas
                         </h1>
                         <div className="w-full flex items-center justify-center">
-                            <Chart data={dataPersetujuanDekan} />
+                            <Chart data={persetujuanRuangdata} />
                         </div>
                         {/* Legend Colors */}
                         <div className="mt-4 flex flex-col gap-2">
-                            {dataPersetujuanDekan.map((entry, index) => (
+                            {persetujuanRuangdata.map((entry, index) => (
                                 <div
                                     key={index}
                                     className="flex items-center gap-2"
@@ -68,14 +84,14 @@ function Dashboard({ user, roles, dosen }) {
                     </div>
                     <div className="flex border flex-col p-6 rounded-[15px] shadow-lg shadow-gray-500/50 mt-6 w-[50%]">
                         <h1 className="font-bold text-[20px]">
-                            Persetujuan Dekan
+                            Progress Ruang Kelas
                         </h1>
                         <div className="w-full flex items-center justify-center">
-                            <Chart data={dataProgressRuangKelas} />
+                            <Chart data={progressRuangdata} />
                         </div>
                         {/* Legend Colors */}
                         <div className="mt-4 flex flex-col gap-2">
-                            {dataProgressRuangKelas.map((entry, index) => (
+                            {progressRuangdata.map((entry, index) => (
                                 <div
                                     key={index}
                                     className="flex items-center gap-2"

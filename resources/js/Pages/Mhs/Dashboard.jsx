@@ -4,6 +4,9 @@ import { Head } from "@inertiajs/react";
 import person from "../../../../public/person.svg";
 
 function Dashboard({ user, roles, mahasiswa, doswal, rekapAll, rekapsmt }) {
+
+    function sksk() {}
+
     return (
         <AuthenticatedLayout role={roles}>
             <Head title="Dashboard" />

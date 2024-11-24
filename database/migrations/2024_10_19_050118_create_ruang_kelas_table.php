@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ruang_kelas', function (Blueprint $table) {
+        Schema::create('ruang', function (Blueprint $table) {
             $table->id();
             $table->string('nama_ruang');
             $table->string('gedung');
             $table->integer('kuota');
+            $table->string('kode_prodi');
             $table->timestamps();
         });
     }

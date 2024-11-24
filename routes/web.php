@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BagianAkademikController;
+use App\Http\Controllers\ChartDataController;
 use App\Http\Controllers\DekanController;
 use App\Http\Controllers\DoswalController;
 use App\Http\Controllers\KaprodiController;
@@ -12,13 +13,39 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+// Route::get('/', function () {
+//     return response()->json(['instance' => env('APP_NAME', gethostname())]);
+// });
+
+
+
+use Illuminate\Support\Facades\Auth;
+
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+    if (!Auth::check()) {
+        // Jika user belum login, arahkan ke halaman login
+        return redirect()->route('login');
+    }
+
+    // Jika user sudah login, cek role dari session
+    $selectedRole = session('selected_role');
+
+    // Arahkan berdasarkan role yang sudah disimpan di session
+    switch ($selectedRole) {
+        case 'Mahasiswa':
+            return redirect()->route('mhs.index');
+        case 'Dekan':
+            return redirect()->route('dekan.index');
+        case 'Ketua Prodi':
+            return redirect()->route('kaprodi.index');
+        case 'Pembimbing Akademik':
+            return redirect()->route('doswal.index');
+        case 'Bagian Akademik':
+            return redirect()->route('bagianakademik.index');
+        default:
+            // Jika role tidak ditemukan, arahkan ke login
+            return redirect()->route('login');
+    }
 });
 
 
@@ -28,6 +55,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/Dekan/KelolaRuang', [DekanController::class, 'kelolaruang'])->middleware(CheckRole::class.':Dekan')->name('dekan.kelolaruang');
     Route::get('/Dekan/JadwalKuliah', [DekanController::class, 'jadwalKuliah'])->middleware(CheckRole::class.':Dekan')->name('dekan.jadwalkuliah');
     Route::post('/Dekan/{id}/setujui', [DekanController::class, 'setujui'])->name('dekan.setujui');
+    Route::post('/Dekan/{jadwal_id}/setujuiJadwal', [DekanController::class, 'setujuiJadwal'])->name('dekan.setujuiJadwal');
+    Route::post('/Dekan/{id}/tolak', [DekanController::class, 'tolak'])->name('dekan.tolak');
+    Route::post('/Dekan/{id}/tolakJadwal', [DekanController::class, 'tolakJadwal'])->name('dekan.tolakJadwal');
+    Route::post('/Dekan/{id}/reset', [DekanController::class, 'reset'])->name('dekan.reset');
+    Route::post('/Dekan/{id}/resetJadwal', [DekanController::class, 'resetJadwal'])->name('dekan.resetJadwal');
+    Route::post('/Dekan/setujuiAll', [DekanController::class, 'setujuiAll'])->name('dekan.setujuiAll');
+    Route::post('/Dekan/setujuiAllJadwal', [DekanController::class, 'setujuiAllJadwal'])->name('dekan.setujuiAllJadwal');
+    Route::post('/Dekan/resetAll', [DekanController::class, 'resetAll'])->name('dekan.resetAll');
+    Route::post('/Dekan/resetAllJadwal', [DekanController::class, 'resetAllJadwal'])->name('dekan.resetAllJadwal');
+    Route::get('/ChartData/persetujuanRuang', [ChartDataController::class, 'persetujuanRuang'])->name('chartdata.persetujuanRuang');
+    Route::get('/ChartData/progressRuang', [ChartDataController::class, 'progressRuang'])->name('chartdata.progressRuang');
     Route::get('/BagianAkademik/dashboard', [BagianAkademikController::class, 'index'])->middleware(CheckRole::class.':Bagian Akademik')->name('bagianakademik.index');
     Route::get('/Doswal/dashboard', [DoswalController::class, 'index'])->middleware(CheckRole::class.':Pembimbing Akademik')->name('doswal.index');
     Route::get('/Doswal/mahasiswaPerwalian', [DoswalController::class, 'mahasiswaPerwalian'])->middleware(CheckRole::class.':Pembimbing Akademik')->name('doswal.mahasiswaPerwalian');
