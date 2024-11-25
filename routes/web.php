@@ -66,6 +66,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/Dekan/resetAllJadwal', [DekanController::class, 'resetAllJadwal'])->name('dekan.resetAllJadwal');
     Route::get('/ChartData/persetujuanRuang', [ChartDataController::class, 'persetujuanRuang'])->name('chartdata.persetujuanRuang');
     Route::get('/ChartData/progressRuang', [ChartDataController::class, 'progressRuang'])->name('chartdata.progressRuang');
+    Route::get('/ChartData/persetujuanJadwal', [ChartDataController::class, 'persetujuanJadwal'])->name('chartdata.persetujuanJadwal');
+    Route::get('/ChartData/progressJadwal', [ChartDataController::class, 'progressJadwal'])->name('chartdata.progressJadwal');
     Route::get('/BagianAkademik/dashboard', [BagianAkademikController::class, 'index'])->middleware(CheckRole::class.':Bagian Akademik')->name('bagianakademik.index');
     Route::get('/Doswal/dashboard', [DoswalController::class, 'index'])->middleware(CheckRole::class.':Pembimbing Akademik')->name('doswal.index');
     Route::get('/Doswal/mahasiswaPerwalian', [DoswalController::class, 'mahasiswaPerwalian'])->middleware(CheckRole::class.':Pembimbing Akademik')->name('doswal.mahasiswaPerwalian');
