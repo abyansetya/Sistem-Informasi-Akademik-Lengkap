@@ -38,6 +38,7 @@ function Dashboard({ user, roles }) {
                                 className="hover:shadow-md transition-shadow duration-300"
                             >
                                 <div className="flex flex-row border rounded-[10px] shadow-lg shadow-gray-100/50 p-4 items-center justify-between bg-white w-full h-full hover:bg-gray-50">
+                                    <img src="../mahasiswa.svg" alt="" className="h-[30px]"/>
                                     <p className="text-[16px] md:text-[24px] font-medium">
                                         Mahasiswa perwalian
                                     </p>
@@ -50,6 +51,7 @@ function Dashboard({ user, roles }) {
                                 className="hover:shadow-md transition-shadow duration-300"
                             >
                                 <div className="flex flex-row border rounded-[10px] shadow-lg shadow-gray-100/50 p-4 items-center justify-between bg-white w-full h-full hover:bg-gray-50">
+                                    <img src="../monitoring.svg" alt="" className="h-[30px]"/>
                                     <p className="text-[16px] md:text-[24px] font-medium">
                                         Monitoring Matakuliah
                                     </p>
@@ -61,6 +63,7 @@ function Dashboard({ user, roles }) {
                                 className="hover:shadow-md transition-shadow duration-300"
                             >
                                 <div className="flex flex-row border rounded-[10px] shadow-lg shadow-gray-100/50 p-4 items-center justify-between bg-white w-full h-full hover:bg-gray-50">
+                                    <img src="../verifikasi.svg" alt="" className="h-[30px]"/>
                                     <p className="text-[16px] md:text-[24px] font-medium">
                                         Verifikasi IRS
                                     </p>
@@ -72,6 +75,7 @@ function Dashboard({ user, roles }) {
                                 className="hover:shadow-md transition-shadow duration-300"
                             >
                                 <div className="flex flex-row border rounded-[10px] shadow-lg shadow-gray-100/50 p-4 items-center justify-between bg-white w-full h-full hover:bg-gray-50">
+                                    <img src="../perkembangan.svg" alt="" className="h-[30px]"/>
                                     <p className="text-[16px] md:text-[24px] font-medium">
                                         Status Perkembangan Mahasiswa
                                     </p>
