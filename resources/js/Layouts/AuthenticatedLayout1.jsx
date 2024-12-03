@@ -65,8 +65,8 @@ function AuthenticatedLayout1({ header, children, role }) {
                         Dashboard
                     </NavLink>
                     <NavLink
-                    // href={route("irs.index")}
-                    // active={route().current("irs.index")}
+                        href={route("mhs.IRS")}
+                        active={route().current("mhs.IRS")}
                     >
                         IRS
                     </NavLink>

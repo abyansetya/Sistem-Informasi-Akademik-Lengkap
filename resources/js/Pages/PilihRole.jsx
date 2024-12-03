@@ -8,6 +8,12 @@ function PilihRole({ roles }) {
         selected_role: "", // Field untuk menyimpan role yang dipilih
     });
 
+    const submit = (e) => {
+        e.preventDefault();
+
+        post(route("pilihrole.choose"));
+    };
+
     // Function untuk mengirim form ke server
     const submitRole = (role) => {
         setData("selected_role", role); // Set role yang dipilih

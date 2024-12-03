@@ -7,6 +7,7 @@ use App\Models\Mahasiswa;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\Dosenpegawai;
+use App\Models\ProgramStudi;
 use App\Models\RekapPrestasi;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -25,6 +26,7 @@ class MhsController extends Controller
     
         // Ambil data mahasiswa berdasarkan NIM yang cocok dengan nim_nip pada tabel users
         $mahasiswa = Mahasiswa::where('user_id', $user->user_id)->first(); // Assuming 'nim' in Mahasiswa table and 'nim_nip' in Users table
+        $prodi = ProgramStudi::where('kode_prodi', $mahasiswa->kode_prodi)->first();
         $doswal = Dosenpegawai::where('NIP', $mahasiswa->NIP_wali )->first();
         $rekapALL = RekapPrestasi::where('NIM', $mahasiswa->NIM)->get();
         $rekapsmt = RekapPrestasi::where('NIM', $mahasiswa->NIM)
@@ -37,6 +39,33 @@ class MhsController extends Controller
             'user' => $user,
             'roles' => $roles,
             'mahasiswa' => $mahasiswa, // Mengirim data mahasiswa
+            'prodi' => $prodi,
+            'doswal' => $doswal,
+            'rekapAll' => $rekapALL,
+            'rekapsmt' => $rekapsmt
+        ]);
+    }
+
+    public function IRS(){
+        // Ambil role pengguna
+        $user = Auth::user();
+        $roles = session('selected_role', 'default');
+    
+        // Ambil data mahasiswa berdasarkan NIM yang cocok dengan nim_nip pada tabel users
+        $mahasiswa = Mahasiswa::where('user_id', $user->user_id)->first(); // Assuming 'nim' in Mahasiswa table and 'nim_nip' in Users table
+
+        $doswal = Dosenpegawai::where('NIP', $mahasiswa->NIP_wali )->first();
+        $rekapALL = RekapPrestasi::where('NIM', $mahasiswa->NIM)->get();
+        $rekapsmt = RekapPrestasi::where('NIM', $mahasiswa->NIM)
+        ->where('Tahun_Ajaran', '2024/2025')
+        ->where('keterangan', 'ganjil')
+        ->get();
+
+        return Inertia::render('Mhs/IRS', [
+            'user' => $user,
+            'roles' => $roles,
+            'mahasiswa' => $mahasiswa, // Mengirim data mahasiswa
+
             'doswal' => $doswal,
             'rekapAll' => $rekapALL,
             'rekapsmt' => $rekapsmt
