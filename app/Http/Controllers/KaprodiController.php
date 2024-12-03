@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class KaprodiController extends Controller
@@ -13,7 +14,12 @@ class KaprodiController extends Controller
      */
     public function index()
     {
-        return inertia::render('Kaprodi/Dashboard');
+        $user = Auth::user();
+        $roles = session('selected_role', 'default');
+        return Inertia::render('Kaprodi/Dashboard', [
+            'user' => $user,
+            'roles' => $roles
+        ]);
     }
 
     /**
