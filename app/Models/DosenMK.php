@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class DosenMk extends Model
+class DosenMK extends Model
 {
     use HasFactory;
 
@@ -18,6 +18,7 @@ class DosenMk extends Model
     // Kolom yang dapat diisi secara massal
     protected $fillable = [
         'dosen_mk_id',
+        'nama_dosen',
         'NIP',
         'kode_mk',
         'created_at',
