@@ -23,7 +23,8 @@ function monitoringMK({ user, roles }) {
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8 font-poppins">
                     {/* Section Monitoring mata kuliah */}
                     <div className="flex flex-col border rounded-md bg-white shadow-sm">
-                        <div className="border-b-2 border-black w-max-auto ml-[40px] mt-5 w-[93%] ">
+                        <div className="border-b-2 border-black w-max-auto ml-[40px] mt-5 w-[93%] flex">
+                            <img src="../monitoring.svg" alt="" className="mr-4 h-[30px]"/>
                             <p className="text-[30px] md:text-[24px] font-bold">
                                 Monitoring Mata Kuliah
                             </p>
@@ -124,7 +125,7 @@ function monitoringMK({ user, roles }) {
                                 List Mahasiswa
                             </p>
                             <div className="flex justify-between mt-6">
-                                <p className="font-semibold text-[17px] mt-6">
+                                <p className="font-semibold text-[17px] mt-6 ">
                                     Semester
                                 </p>
                                 <div className="relative w-[20%] mt-[15px]">

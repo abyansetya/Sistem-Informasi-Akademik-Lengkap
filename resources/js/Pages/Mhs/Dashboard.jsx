@@ -2,8 +2,28 @@ import React from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout1";
 import { Head } from "@inertiajs/react";
 import person from "../../../../public/person.svg";
+import LineChart from "@/Components/LineChartt";
 
-function Dashboard({ user, roles, mahasiswa, doswal, rekapAll, rekapsmt }) {
+function Dashboard({
+    user,
+    roles,
+    mahasiswa,
+    prodi,
+    doswal,
+    rekapAll,
+    rekapsmt,
+}) {
+    // Fungsi untuk memanipulasi dan mengurutkan data
+    function formatLineChartData(data) {
+        return data
+            .sort((a, b) => a.Semester - b.Semester) // Mengurutkan berdasarkan Semester secara ascending
+            .map((item) => ({
+                name: `Semester ${item.Semester}`, // Mengubah Semester menjadi name
+                IPs: parseFloat(item.IP_Semester), // Mengubah IP_Semester menjadi IPs
+            }));
+    }
+
+    const LineChartData = formatLineChartData(rekapAll);
 
     function sksk() {}
 
@@ -26,7 +46,10 @@ function Dashboard({ user, roles, mahasiswa, doswal, rekapAll, rekapsmt }) {
                                     {mahasiswa.Name}
                                 </p>
                                 <p className="text-cgrey-2 text-[13px]">
-                                    NIP. {mahasiswa.NIM}
+                                    NIM. {mahasiswa.NIM}
+                                </p>
+                                <p className="text-cgrey-2 text-[13px]">
+                                    {prodi.nama_prodi} S1
                                 </p>
                             </div>
                         </div>
@@ -78,6 +101,18 @@ function Dashboard({ user, roles, mahasiswa, doswal, rekapAll, rekapsmt }) {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div className="border rounded-[15px] shadow-lg shadow-gray-500/50 mt-6 p-6 flex flex-col w-full items-center justify-center">
+                        <div className="flex w-full mt-3 mb-6 ml-6 justify-between">
+                            <p className="font-bold text-[20px]">
+                                Statistik Mahasiswa/i
+                            </p>
+                            <div className="flex items-center gap-4  mr-6 ">
+                                <div className="w-[50px] h-[5px] bg-[#8884d8]" />
+                                <p className="font-medium">IP Semester</p>
+                            </div>
+                        </div>
+                        <LineChart data={LineChartData} />
                     </div>
                 </div>
             </div>

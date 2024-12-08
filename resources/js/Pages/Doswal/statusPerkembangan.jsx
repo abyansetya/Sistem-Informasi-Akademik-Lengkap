@@ -1,15 +1,81 @@
-import React from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout1";
 import { Head } from "@inertiajs/react";
 
-function statusPerkembangan({ user, roles }) {
+function statusPerkembangan({ roles, mahasiswa = [] }) {
+    const [searchQuery, setSearchQuery] = useState(""); // Menyimpan query pencarian
+    const [filteredSuggestions, setFilteredSuggestions] = useState([]); // Menyimpan saran pencarian
+    const [isDropdownVisible, setIsDropdownVisible] = useState(false); // Menyimpan status dropdown
+    const [selectedAngkatan, setSelectedAngkatan] = useState(""); // Menyimpan angkatan yang dipilih
+
+    // Filter mahasiswa berdasarkan pencarian nama dan angkatan yang dipilih
+    const handleSearchChange = (e) => {
+        const query = e.target.value;
+        setSearchQuery(query);
+
+        const suggestions = mahasiswa.filter((mhs) => {
+            const nama = mhs.Name || "";
+            return nama.toLowerCase().includes(query.toLowerCase());
+        });
+
+        setFilteredSuggestions(suggestions);
+        setIsDropdownVisible(query.length > 0 && suggestions.length > 0); // Menampilkan dropdown jika ada saran
+    };
+
+    // Menangani klik pada saran pencarian
+    const handleSuggestionClick = (name) => {
+        setSearchQuery(name); // Isi input dengan nama yang dipilih
+        setIsDropdownVisible(false); // Menyembunyikan dropdown setelah memilih nama
+    };
+
+    // Menangani perubahan pada dropdown angkatan
+    const handleAngkatanChange = (e) => {
+        setSelectedAngkatan(e.target.value);
+    };
+
+    // Menutup dropdown jika pengguna mengklik di luar
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (!e.target.closest(".search-container")) {
+                setIsDropdownVisible(false);
+            }
+        };
+
+        document.addEventListener("click", handleClickOutside);
+
+        return () => {
+            document.removeEventListener("click", handleClickOutside);
+        };
+    }, []);
+
+    // Filter mahasiswa berdasarkan pencarian dan angkatan yang dipilih
+    const filteredMahasiswa = useMemo(() => {
+        return mahasiswa
+            .filter((mhs) => {
+                const matchesSearch = mhs.Name.toLowerCase().includes(
+                    searchQuery.toLowerCase()
+                );
+                const matchesAngkatan =
+                    selectedAngkatan === "" ||
+                    mhs.angkatan.toString() === selectedAngkatan;
+    
+                return matchesSearch && matchesAngkatan;
+            })
+            .sort((a, b) => a.angkatan - b.angkatan); // Mengurutkan berdasarkan angkatan
+    }, [mahasiswa, searchQuery, selectedAngkatan]);
+
     return (
         <AuthenticatedLayout role={roles}>
-            <Head title="Status Perkembangan" />
+            <Head title="Status_Perkembangan" />
             <div className="py-12 px-4">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8 font-poppins">
                     <div className="flex-col border border-gray-300 rounded-[10px] shadow-lg shadow-gray-100/50 mt-5 bg-white w-full h-full p-6">
-                        <div className="border-b-2 border-black w-[85%] mx-auto">
+                        <div className="border-b-2 border-black w-[85%] mx-auto flex">
+                            <img
+                                src="../perkembangan.svg"
+                                alt=""
+                                className="mr-4 mt-7 h-[40px]"
+                            />
                             <p className="text-[24px] md:text-[22px] font-bold pt-4">
                                 Status Perkembangan
                                 <span className="block">Mahasiswa</span>
@@ -54,7 +120,33 @@ function statusPerkembangan({ user, roles }) {
                                         type="text"
                                         placeholder="Nama mahasiswa"
                                         className="py-2 text-sm text-black font-light focus:outline-none rounded-lg w-full bg-cgrey-3 pl-4 pr-10"
+                                        value={searchQuery}
+                                        onChange={handleSearchChange}
+                                        onFocus={() =>
+                                            setIsDropdownVisible(true)
+                                        }
                                     />
+                                    {isDropdownVisible &&
+                                        filteredSuggestions.length > 0 && (
+                                            <div className="absolute bg-white border border-gray-300 w-full mt-1 rounded-md shadow-lg z-10 transition-all duration-300 ease-in-out">
+                                                {filteredSuggestions.map(
+                                                    (mhs) => (
+                                                        <div
+                                                            key={mhs.NIM}
+                                                            className="p-2 cursor-pointer hover:bg-gray-100"
+                                                            onClick={() =>
+                                                                handleSuggestionClick(
+                                                                    mhs.Name
+                                                                )
+                                                            }
+                                                        >
+                                                            {mhs.Name}{" "}
+                                                            {/* Hanya menampilkan nama */}
+                                                        </div>
+                                                    )
+                                                )}
+                                            </div>
+                                        )}
                                     <button className="absolute top-1/2 right-0 transform -translate-y-1/2 bg-cpurple-1 text-white p-2 flex items-center justify-center rounded-lg h-9.5 w-9">
                                         <svg
                                             width="20"
@@ -82,23 +174,28 @@ function statusPerkembangan({ user, roles }) {
                                     </button>
                                 </div>
                                 {/* Dropdown */}
-                                <select className="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-blue-300 w-[200px]">
+                                <select
+                                    className="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-blue-300 w-[200px]"
+                                    value={selectedAngkatan}
+                                    onChange={handleAngkatanChange}
+                                >
                                     <option value="">Angkatan</option>
-                                    <option value="2018">2018</option>
-                                    <option value="2019">2019</option>
-                                    <option value="2020">2020</option>
-                                    <option value="2021">2021</option>
-                                    <option value="2022">2022</option>
-                                    <option value="2023">2023</option>
-                                    <option value="2024">2024</option>
+                                    {[
+                                        2018, 2019, 2020, 2021, 2022, 2023,
+                                        2024,
+                                    ].map((year) => (
+                                        <option key={year} value={year}>
+                                            {year}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
                         </div>
                         {/* Table Mahasiswa */}
-                        <div className="overflow-x-auto pr-[90px] pl-[90px]">
+                        <div className="overflow-x-auto pr-[90px] pl-[90px] mb-5">
                             <div className="overflow-hidden rounded-lg shadow-lg">
-                                <table className="min-w-full table-auto bg-cgrey-0 rounded-sm border-separate border-spacing-0">
-                                    <thead>
+                                <table className="min-w-full table-auto bg-white rounded-sm border-separate border-spacing-0">
+                                    <thead className="bg-cgrey-0">
                                         <tr>
                                             <th className="px-4 py-2 font-normal text-[15px]">
                                                 NAMA
@@ -114,6 +211,50 @@ function statusPerkembangan({ user, roles }) {
                                             </th>
                                         </tr>
                                     </thead>
+                                    <tbody>
+                                        {filteredMahasiswa.length > 0 ? (
+                                            filteredMahasiswa.map((mhs) => (
+                                                <tr
+                                                    key={mhs.NIM}
+                                                    className="text-center hover:bg-gray-50"
+                                                >
+                                                    <td className="px-4 py-2 border-b">
+                                                        {mhs.Name || "N/A"}
+                                                    </td>
+                                                    <td className="px-4 py-2 border-b">
+                                                        {mhs.NIM || "N/A"}
+                                                    </td>
+                                                    <td className="px-4 py-2 border-b">
+                                                        {mhs.angkatan || "N/A"}
+                                                    </td>
+                                                    <td className="px-4 py-2 border-b">
+                                                        <span
+                                                            className={`px-2 py-1 rounded-full text-sm ${
+                                                                mhs.status ===
+                                                                "active"
+                                                                    ? "bg-red-100 text-red-800"
+                                                                    : "bg-green-100 text-green-800"
+                                                            }`}
+                                                        >
+                                                            {mhs.status ===
+                                                            "aktif"
+                                                                ? "Aktif"
+                                                                : "Tidak Aktif"}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr>
+                                                <td
+                                                    colSpan="7"
+                                                    className="px-4 py-2 text-center"
+                                                >
+                                                    Tidak ada data mahasiswa
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
