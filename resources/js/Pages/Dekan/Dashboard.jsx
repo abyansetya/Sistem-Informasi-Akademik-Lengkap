@@ -10,6 +10,8 @@ import {
 function Dashboard({ user, roles, dosen }) {
     const [persetujuanRuangdata, setPertesetujanRuangData] = useState([]);
     const [progressRuangdata, setprogressRuangdata] = useState([]);
+    const [persetujuanJadwalData, setPersetujuanJadwalData] = useState([]);
+    const [progressJadwalData, setProgressJadwalData] = useState([]);
 
     useEffect(() => {
         // Fetch data dari backend
@@ -18,10 +20,20 @@ function Dashboard({ user, roles, dosen }) {
             .then((data) => {
                 setPertesetujanRuangData(data.dataPersetujuanDekan);
             });
+        fetch("/ChartData/persetujuanJadwal")
+            .then((response) => response.json())
+            .then((data) => {
+                setPersetujuanJadwalData(data.dataPersetujuanJadwal);
+            });
         fetch("/ChartData/progressRuang")
             .then((response) => response.json())
             .then((data) => {
                 setprogressRuangdata(data.dataProgressRuang);
+            });
+        fetch("/ChartData/progressJadwal")
+            .then((response) => response.json())
+            .then((data) => {
+                setProgressJadwalData(data.dataProgressJadwal);
             });
     }, []);
     const role = roles.length > 0 ? roles : "No role available";
@@ -92,6 +104,58 @@ function Dashboard({ user, roles, dosen }) {
                         {/* Legend Colors */}
                         <div className="mt-4 flex flex-col gap-2">
                             {progressRuangdata.map((entry, index) => (
+                                <div
+                                    key={index}
+                                    className="flex items-center gap-2"
+                                >
+                                    <div
+                                        style={{
+                                            backgroundColor: COLORS[index],
+                                        }}
+                                        className="w-[20px] h-[20px] border"
+                                    ></div>
+                                    <span>{entry.name}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+                <div className="flex justify-between gap-[10px]">
+                    <div className="flex border flex-col p-6 rounded-[15px] shadow-lg shadow-gray-500/50 mt-6 w-[50%]">
+                        <h1 className="font-bold text-[20px]">
+                            Persetujuan Jadwal Kuliah
+                        </h1>
+                        <div className="w-full flex items-center justify-center">
+                            <Chart data={persetujuanJadwalData} />
+                        </div>
+                        {/* Legend Colors */}
+                        <div className="mt-4 flex flex-col gap-2">
+                            {persetujuanJadwalData.map((entry, index) => (
+                                <div
+                                    key={index}
+                                    className="flex items-center gap-2"
+                                >
+                                    <div
+                                        style={{
+                                            backgroundColor: COLORS[index],
+                                        }}
+                                        className="w-[20px] h-[20px] border"
+                                    ></div>
+                                    <span>{entry.name}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="flex border flex-col p-6 rounded-[15px] shadow-lg shadow-gray-500/50 mt-6 w-[50%]">
+                        <h1 className="font-bold text-[20px]">
+                            Progress Jadwal Kuliah
+                        </h1>
+                        <div className="w-full flex items-center justify-center">
+                            <Chart data={progressJadwalData} />
+                        </div>
+                        {/* Legend Colors */}
+                        <div className="mt-4 flex flex-col gap-2">
+                            {progressJadwalData.map((entry, index) => (
                                 <div
                                     key={index}
                                     className="flex items-center gap-2"

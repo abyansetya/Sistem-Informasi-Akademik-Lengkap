@@ -1,5 +1,6 @@
 import ApplicationLogo from "@/Components/ApplicationLogo";
 import { Link } from "@inertiajs/react";
+import studying from "@/../../public/studying.png";
 
 export default function Guest({ children }) {
     return (
@@ -24,8 +25,7 @@ export default function Guest({ children }) {
 
             {/* Section Kanan */}
             <div className="flex-1 flex items-center justify-center bg-gray-200">
-                <h2>Section Kanan</h2>
-                <p>Konten untuk section kanan.</p>
+                <img src={studying} alt="" />
             </div>
         </div>
     );

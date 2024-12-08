@@ -65,14 +65,14 @@ function AuthenticatedLayout1({ header, children, role }) {
                         Dashboard
                     </NavLink>
                     <NavLink
-                    // href={route("irs.index")}
-                    // active={route().current("irs.index")}
+                        href={route("mhs.IRS")}
+                        active={route().current("mhs.IRS")}
                     >
                         IRS
                     </NavLink>
                     <NavLink
-                    // href={route("irs.index")}
-                    // active={route().current("irs.index")}
+                        href={route("mhs.KHS")}
+                        active={route().current("mhs.KHS")}
                     >
                         KHS
                     </NavLink>
@@ -270,7 +270,7 @@ function AuthenticatedLayout1({ header, children, role }) {
                                                 type="button"
                                                 className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-black transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none "
                                             >
-                                                test
+                                                SIAL
                                                 <svg
                                                     className="-me-0.5 ms-2 h-4 w-4"
                                                     xmlns="http://www.w3.org/2000/svg"

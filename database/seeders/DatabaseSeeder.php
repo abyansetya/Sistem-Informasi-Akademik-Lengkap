@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Mahasiswa;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\UserRole;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -40,14 +41,27 @@ class DatabaseSeeder extends Seeder
         //     $user->roles()->attach($roleDoswal->id, [], 'user_roles');
         // }
         // $this->call(MataKuliahSeeder::class);
-        Mahasiswa::create([
-            'nim' => '24000001',
-            'angkatan' => 2024,
-            'semester' => 1,
-            'sks' => 0,
-            'ipk' => 0.00,
-            'jumlah_sks' => 0,
-            'wali_id' => 14
+        // Mahasiswa::create([
+        //     'nim' => '24000001',
+        //     'angkatan' => 2024,
+        //     'semester' => 1,
+        //     'sks' => 0,
+        //     'ipk' => 0.00,
+        //     'jumlah_sks' => 0,
+        //     'wali_id' => 14
+        // ]);
+
+        // User::create([
+        //     'email' => 'GigihFalah@example.com',
+        //     'email_verified_at' => now(),
+        //     'password' => Hash::make('password123'),
+        //     'created_at' => now(),
+        //    'updated_at' => now(),
+        // ]);
+
+        UserRole::create([
+            ''
         ]);
+    
     }
 }
