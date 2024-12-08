@@ -2,8 +2,10 @@ import AuthenticatedLayout1 from "@/Layouts/AuthenticatedLayout1";
 import { Head, Link, useForm } from "@inertiajs/react";
 import React, { useState } from "react";
 import search from "../../../../public/search-black.svg";
+import Swal from "sweetalert2";
+import axios from "axios";
 
-export default function KelolaRuang({ user, roles, ruangkelas, dosen }) {
+export default function KelolaRuang({ user, roles, ruangkelas, dosen, prodi }) {
     const { post } = useForm();
     const [statusRuang, setStatusRuang] = useState(
         ruangkelas.data.map((ruang) => ({
@@ -12,133 +14,297 @@ export default function KelolaRuang({ user, roles, ruangkelas, dosen }) {
         }))
     );
 
-    // Fungsi untuk mengubah status
-    const handleSetujui = (id) => {
-        post(`/Dekan/${id}/setujui`, {
-            preserveScroll: true,
-            onSuccess: () => {
-                setStatusRuang((prevStatus) =>
-                    prevStatus.map((ruang) =>
-                        ruang.id === id
-                            ? { ...ruang, status: "approved" }
-                            : ruang
-                    )
-                );
-            },
-        });
-    };
+    const [searchTerm, setSearchTerm] = useState("");
 
-    const handleTolak = (id) => {
-        post(`/Dekan/${id}/tolak`, {
-            preserveScroll: true,
-            onSuccess: () => {
-                setStatusRuang((prevStatus) =>
-                    prevStatus.map((ruang) =>
-                        ruang.id === id
-                            ? { ...ruang, status: "rejected" }
-                            : ruang
-                    )
-                );
-            },
-        });
-    };
-
-    const handleReset = (id) => {
-        post(`/Dekan/${id}/reset`, {
-            preserveScroll: true,
-            onSuccess: () => {
-                setStatusRuang((prevStatus) =>
-                    prevStatus.map((ruang) =>
-                        ruang.id === id
-                            ? { ...ruang, status: "onprocess" }
-                            : ruang
-                    )
-                );
-            },
-        });
-    };
-
-    const handleSetujuiAll = () => {
-        post(`/Dekan/setujuiAll`, {
-            preserveScroll: true,
-            onSuccess: () => {
-                setStatusRuang((prevStatus) =>
-                    prevStatus.map((ruang) => ({
-                        ...ruang,
-                        status: "approved",
-                    }))
-                );
-            },
-        });
-    };
-
-    const handleResetAll = () => {
-        post(`/Dekan/resetAll`, {
-            preserveScroll: true,
-            onSuccess: () => {
-                setStatusRuang((prevStatus) =>
-                    prevStatus.map((ruang) => ({
-                        ...ruang,
-                        status: "onprocess",
-                    }))
-                );
-            },
-        });
-    };
-
-    const PaginationLinks = () => (
-        <div className="flex justify-center mt-4">
-            {ruangkelas.links.map((link, index) => (
-                <Link
-                    key={index}
-                    href={link.url || "#"}
-                    dangerouslySetInnerHTML={{ __html: link.label }}
-                    className={`mx-1 px-3 py-1 border rounded ${
-                        link.active
-                            ? "bg-blue-500 text-white"
-                            : "bg-white text-black"
-                    }`}
-                    preserveScroll
-                />
-            ))}
-        </div>
+    // Filter prodi based on search term
+    const filteredProdi = (prodi || []).filter((prodiItem) =>
+        prodiItem.nama_prodi.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
-    const renderStatusButton = (ruang) => {
-        if (ruang.status === "onprocess") {
-            return (
-                <>
-                    <button
-                        onClick={() => handleSetujui(ruang.id)}
-                        className="w-[80px] rounded text-white font-poppins font-normal bg-cgreen-2 py-2"
-                    >
-                        Setujui
-                    </button>
-                    <button
-                        onClick={() => handleTolak(ruang.id)}
-                        className="w-[80px] rounded text-white font-poppins font-normal bg-cred-1 py-2"
-                    >
-                        Tolak
-                    </button>
-                </>
-            );
-        }
+    // Tambahkan fungsi ProdiTable yang baru
+    const ProdiTable = () => {
         return (
-            <button
-                onClick={() => handleReset(ruang.id)}
-                className="w-[80px] rounded text-white font-poppins font-normal bg-cgrey-2 py-2"
-            >
-                Reset
-            </button>
+            <div className="overflow-x-auto mt-4 rounded-lg">
+                <table className="min-w-full table-auto bg-white shadow-md rounded-lg text-sm font-poppins">
+                    <thead>
+                        <tr className="bg-gray-100 text-black uppercase leading-normal">
+                            <th className="py-3 px-3 text-center">No</th>
+                            <th className="py-3 px-3 text-center">
+                                Program Studi
+                            </th>
+                            <th className="py-3 px-3 text-center">
+                                Total Ruangan
+                            </th>
+                            <th className="py-3 px-3 text-center">
+                                Detail Ruangan
+                            </th>
+                            <th className="py-3 px-3 text-center">Status</th>
+                            <th className="py-3 px-3 text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody className="text-gray-600 font-light">
+                        {filteredProdi.map((prodiItem, index) => {
+                            const prodiRooms = ruangkelas.data.filter(
+                                (ruang) =>
+                                    ruang.kode_prodi === prodiItem.kode_prodi
+                            );
+
+                            // Hitung total ruangan
+                            const roomCount = prodiRooms.length;
+
+                            // Cek apakah ada ruangan baru
+                            const hasNewRoom = prodiRooms.some(
+                                (ruang) =>
+                                    !statusRuang.some((s) => s.id === ruang.id)
+                            );
+
+                            // Cek status approved
+                            const allApproved =
+                                !hasNewRoom &&
+                                prodiRooms.length > 0 &&
+                                prodiRooms.every(
+                                    (ruang) =>
+                                        statusRuang.find(
+                                            (s) => s.id === ruang.id
+                                        )?.status === "approved"
+                                );
+
+                            // Cek status rejected
+                            const allRejected =
+                                !hasNewRoom &&
+                                prodiRooms.length > 0 &&
+                                prodiRooms.every(
+                                    (ruang) =>
+                                        statusRuang.find(
+                                            (s) => s.id === ruang.id
+                                        )?.status === "rejected"
+                                );
+                            // Determine status text and color
+                            let statusText = "";
+                            let statusColor = "";
+
+                            if (prodiRooms.length === 0) {
+                                statusText = "Belum ada jadwal";
+                                statusColor = "text-gray-500";
+                            } else if (hasNewRoom) {
+                                statusText = "Dalam proses";
+                                statusColor = "text-yellow-500";
+                            } else if (allApproved) {
+                                statusText = "Disetujui";
+                                statusColor = "text-green-500";
+                            } else if (allRejected) {
+                                statusText = "Ditolak";
+                                statusColor = "text-red-500";
+                            } else {
+                                statusText = "Dalam proses";
+                                statusColor = "text-yellow-500";
+                            }
+
+                            return (
+                                <tr
+                                    key={prodiItem.kode_prodi}
+                                    className="border-b hover:bg-gray-50"
+                                >
+                                    <td className="py-5 px-3 text-center">
+                                        {index + 1}
+                                    </td>
+                                    <td className="py-5 px-3 text-center">
+                                        {prodiItem.nama_prodi}
+                                    </td>
+                                    <td className="py-5 px-3 text-center">
+                                        {roomCount} Ruangan
+                                    </td>
+                                    <td className="py-5 px-3 text-center">
+                                        <Link
+                                            href={route("dekan.ruang.detail", {
+                                                kode_prodi:
+                                                    prodiItem.kode_prodi,
+                                            })}
+                                            className="bg-cpurple-1 text-white px-4 py-2 rounded hover:opacity-70 transition-colors"
+                                        >
+                                            Lihat Ruangan
+                                        </Link>
+                                    </td>
+                                    <td className="py-5 px-3 text-center">
+                                        <span
+                                            className={`font-medium ${statusColor}`}
+                                        >
+                                            {statusText}
+                                        </span>
+                                    </td>
+                                    <td className="py-3 px-3 text-center">
+                                        {prodiRooms.length === 0 ? (
+                                            <span className="font-medium bg-cgrey-1 text-white px-4 py-2 rounded hover:cursor-not-allowed">
+                                                Belum ada ruangan
+                                            </span>
+                                        ) : hasNewRoom ? (
+                                            <div className="w-full flex gap-3 justify-center">
+                                                <button
+                                                    onClick={() =>
+                                                        handleSetujuiProdi(
+                                                            prodiItem.kode_prodi
+                                                        )
+                                                    }
+                                                    className="bg-cgreen-2 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors"
+                                                >
+                                                    Setujui
+                                                </button>
+                                                <button
+                                                    onClick={() =>
+                                                        handleTolakProdi(
+                                                            prodiItem.kode_prodi
+                                                        )
+                                                    }
+                                                    className="w-[80px] rounded text-white font-poppins font-normal bg-cred-1 py-2"
+                                                >
+                                                    Tolak
+                                                </button>
+                                            </div>
+                                        ) : allApproved || allRejected ? (
+                                            <button
+                                                onClick={() =>
+                                                    handleResetProdi(
+                                                        prodiItem.kode_prodi
+                                                    )
+                                                }
+                                                className="text-white font-medium px-4 py-2 rounded bg-cgrey-2 hover:opacity-70"
+                                            >
+                                                Reset
+                                            </button>
+                                        ) : (
+                                            <div className="w-full flex gap-3 justify-center">
+                                                <button
+                                                    onClick={() =>
+                                                        handleSetujuiProdi(
+                                                            prodiItem.kode_prodi
+                                                        )
+                                                    }
+                                                    className="bg-cgreen-2 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors"
+                                                >
+                                                    Setujui
+                                                </button>
+                                                <button
+                                                    onClick={() =>
+                                                        handleTolakProdi(
+                                                            prodiItem.kode_prodi
+                                                        )
+                                                    }
+                                                    className="w-[80px] rounded text-white font-poppins font-normal bg-cred-1 py-2"
+                                                >
+                                                    Tolak
+                                                </button>
+                                            </div>
+                                        )}
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+            </div>
         );
     };
 
-    const [searchTerm, setSearchTerm] = useState("");
+    // Tambahkan fungsi handleSetujuiProdi dan handleTolakProdi
+    const handleSetujuiProdi = (kodeProdi) => {
+        Swal.fire({
+            title: "Apakah Anda yakin?",
+            text: "Semua ruangan untuk prodi ini akan disetujui!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Setujui",
+            cancelButtonText: "Batal",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axios
+                    .post(`/Dekan/setujuiProdiRuang/${kodeProdi}`)
+                    .then((response) => {
+                        Swal.fire({
+                            title: "Berhasil!",
+                            text: "Semua ruangan telah disetujui.",
+                            icon: "success",
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    })
+                    .catch((error) => {
+                        Swal.fire(
+                            "Gagal!",
+                            "Terjadi kesalahan saat menyetujui ruangan.",
+                            "error"
+                        );
+                        console.error("Error saat melakukan request: ", error);
+                    });
+            }
+        });
+    };
 
-    // Fungsi untuk memfilter ruang berdasarkan nama_ruang
-    const filteredRuangKelas = ruangkelas.data.filter((ruang) =>
-        ruang.nama_ruang.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const handleTolakProdi = (kodeProdi) => {
+        Swal.fire({
+            title: "Apakah Anda yakin?",
+            text: "Semua ruangan untuk prodi ini akan ditolak!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Tolak",
+            cancelButtonText: "Batal",
+            dangerMode: true,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axios
+                    .post(`/Dekan/tolakProdiRuang/${kodeProdi}`)
+                    .then((response) => {
+                        Swal.fire(
+                            "Berhasil!",
+                            "Semua ruangan telah ditolak.",
+                            "success"
+                        );
+                        window.location.reload();
+                    })
+                    .catch((error) => {
+                        Swal.fire(
+                            "Gagal!",
+                            "Terjadi kesalahan saat menolak ruangan.",
+                            "error"
+                        );
+                        console.error("Error saat melakukan request: ", error);
+                    });
+            }
+        });
+    };
+
+    const handleResetProdi = (kodeProdi) => {
+        Swal.fire({
+            title: "Apakah Anda yakin?",
+            text: "Semua ruang untuk prodi ini akan direset!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Reset",
+            cancelButtonText: "Batal",
+            dangerMode: true,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Melakukan POST request untuk menolak semua jadwal
+                axios
+                    .post(`/Dekan/resetProdiRuang/${kodeProdi}`)
+                    .then((response) => {
+                        Swal.fire(
+                            "Berhasil!",
+                            "Semua ruang telah direset.",
+                            "success"
+                        );
+                        // Refresh halaman atau data setelah sukses
+                        window.location.reload(); // Reload halaman
+                    })
+                    .catch((error) => {
+                        Swal.fire(
+                            "Gagal!",
+                            "Terjadi kesalahan saat reset ruang.",
+                            "error"
+                        );
+                        console.error("Error saat melakukan request: ", error);
+                    });
+            }
+        });
+    };
 
     return (
         <AuthenticatedLayout1 role={roles}>
@@ -173,17 +339,17 @@ export default function KelolaRuang({ user, roles, ruangkelas, dosen }) {
                 </div>
 
                 <div className="flex border rounded-[15px] shadow-lg shadow-gray-500/50 mt-6 p-6 items-center gap-[20px]">
+                    {/* Ganti bagian tabel yang ada dengan ProdiTable */}
                     <div className="flex flex-col w-full">
                         <h1 className="font-bold text-[20px] mb-[5px]">
-                            Ruang Kelas
+                            Program Studi
                         </h1>
                         <div className="h-[4px] bg-black border w-full" />
                         <div className="flex items-center w-full justify-between mt-[10px]">
-                            {/* Search Bar */}
-                            <div className=" w-[200px] h-[40px] bg-[#FFF6F6] shadow-lg flex items-center rounded-[10px] px-3 gap-2">
+                            <div className="w-[250px] h-[40px] bg-[#FFF6F6] shadow-lg flex items-center rounded-[10px] px-3 gap-2">
                                 <input
                                     type="text"
-                                    placeholder="Ruang Kelas"
+                                    placeholder="Cari Program Studi"
                                     value={searchTerm}
                                     onChange={(e) =>
                                         setSearchTerm(e.target.value)
@@ -191,112 +357,13 @@ export default function KelolaRuang({ user, roles, ruangkelas, dosen }) {
                                     className="focus:outline-none focus:ring-0 appearance-none w-full bg-transparent border-none text-sm text-gray-600"
                                 />
                                 <img
-                                    src={search} // Ganti dengan path ikon Anda
+                                    src={search}
                                     alt="Cari"
-                                    className="w-5 h-5 "
+                                    className="w-5 h-5"
                                 />
                             </div>
-                            <div className="border border-cgrey-2  gap-2 flex items-center p-2 ">
-                                <button
-                                    onClick={() => handleSetujuiAll()}
-                                    className="text-sm px-1 rounded text-white font-poppins font-normal bg-cgreen-2 py-2"
-                                >
-                                    Setujui Semua
-                                </button>
-                                <button
-                                    onClick={() => handleResetAll()}
-                                    className="text-sm px-1 rounded text-white font-poppins font-normal bg-cgrey-2 py-2"
-                                >
-                                    Reset Semua
-                                </button>
-                            </div>
                         </div>
-
-                        <div className="overflow-x-auto mt-4 rounded-lg">
-                            {ruangkelas.data.length > 0 ? (
-                                <table className="min-w-full table-auto bg-cgrey-0 rounded-lg shadow-md text-sm font-poppins">
-                                    <thead>
-                                        <tr className="bg-gray-100 text-black uppercase leading-normal">
-                                            {[
-                                                "Nama Ruang",
-                                                "Gedung",
-                                                "Kuota",
-                                                "Program Studi",
-                                                "Status",
-                                                "Aksi",
-                                            ].map((header, index) => (
-                                                <th
-                                                    key={index}
-                                                    className="py-3 px-3 border-none text-center"
-                                                >
-                                                    {header}
-                                                </th>
-                                            ))}
-                                        </tr>
-                                    </thead>
-                                    <tbody className="text-gray-600 border-none font-light">
-                                        {filteredRuangKelas.length > 0 ? (
-                                            filteredRuangKelas.map((ruang) => (
-                                                <tr
-                                                    key={ruang.id}
-                                                    className="border-b border-none hover:bg-gray-50"
-                                                >
-                                                    <td className="py-2 px-2 border-none text-center">
-                                                        {ruang.nama_ruang}
-                                                    </td>
-                                                    <td className="py-2 px-2 border-none text-center">
-                                                        {ruang.gedung}
-                                                    </td>
-                                                    <td className="py-2 px-2 border-none text-center">
-                                                        {ruang.kuota}
-                                                    </td>
-                                                    <td className="py-2 px-2 border-none text-center">
-                                                        {ruang.nama_prodi ||
-                                                            "Prodi Belum Ditetapkan"}
-                                                    </td>
-                                                    <td className="py-2 px-2 border-none text-center">
-                                                        <p
-                                                            className={`${
-                                                                ruang.status ===
-                                                                "approved"
-                                                                    ? "text-green-500"
-                                                                    : ruang.status ===
-                                                                      "rejected"
-                                                                    ? "text-red-500"
-                                                                    : ""
-                                                            }`}
-                                                        >
-                                                            {ruang.status}
-                                                        </p>
-                                                    </td>
-                                                    <td className="py-2 px-2 border-none text-center flex gap-2 justify-center">
-                                                        {renderStatusButton(
-                                                            ruang
-                                                        )}
-                                                    </td>
-                                                </tr>
-                                            ))
-                                        ) : (
-                                            <tr>
-                                                <td
-                                                    colSpan={6}
-                                                    className="text-center py-4 text-gray-500 font-poppins"
-                                                >
-                                                    Tidak ada ruangan yang
-                                                    sesuai pencarian
-                                                </td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
-                            ) : (
-                                <div className="text-center py-4 text-gray-500 font-poppins">
-                                    Tidak ada ruangan untuk disetujui/ditolak
-                                </div>
-                            )}
-                        </div>
-
-                        <PaginationLinks />
+                        <ProdiTable />
                     </div>
                 </div>
             </div>

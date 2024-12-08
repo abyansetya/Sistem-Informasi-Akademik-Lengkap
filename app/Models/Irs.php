@@ -17,11 +17,12 @@ class Irs extends Model
 
     // Kolom yang dapat diisi
     protected $fillable = [
-        'jadwal_id',
-        'nim',
-        'status',
-        'created_at',
-        'updated_at',
+        'jadwal_id', 
+        'NIM', 
+        'status', 
+        'Tahun_Ajaran', 
+        'keterangan',
+        'status_pengambilan'
     ];
 
     // Jika primary key bukan auto-increment
