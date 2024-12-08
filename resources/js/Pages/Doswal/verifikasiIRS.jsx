@@ -37,12 +37,12 @@ function VerifikasiIRS({ roles, mahasiswa = [] }) {
                                 alt=""
                                 className="mr-4 h-[30px]"
                             />
-                            <p className="text-[24px] md:text-[22px] font-bold ">
+                            <p className="text-[24px] md:text-[18px] font-bold ">
                                 Verifikasi IRS
                             </p>
                         </div>
                         {/* Table verifikasiIRS */}
-                        <div className="overflow-x-auto pr-[90px] pl-[90px] pt-[20px]">
+                        <div className="overflow-x-auto pr-[90px] pl-[90px] pt-[20px] mt-4">
                             <div className="overflow-hidden rounded-lg shadow-lg flex justify-center">
                                 <table className="min-w-full table-auto bg-white rounded-lg border-separate border-spacing-0">
                                     <thead className="bg-cgrey-0">

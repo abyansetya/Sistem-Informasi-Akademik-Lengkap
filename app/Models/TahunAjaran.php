@@ -52,4 +52,3 @@ class TahunAjaran extends Model
         'tanggal_mulai' => 'date',
         'tanggal_selesai' => 'date',
     ];
-}
