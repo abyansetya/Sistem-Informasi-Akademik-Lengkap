@@ -34,7 +34,7 @@ function SelectField({ label, name, value, onChange, options, labelKey = 'nama_d
                 <option value="">Pilih {label}</option>
                 {options.map((option, index) => (
                     <option 
-                        key={option.NIP || index}  // Use NIP if it exists, else use index as fallback
+                        key={option.NIP || index}
                         value={option.NIP}
                     >
                         {option[labelKey]}
@@ -47,32 +47,30 @@ function SelectField({ label, name, value, onChange, options, labelKey = 'nama_d
 
 function JadwalDetail({ user, roles, mataKuliah, dosenList, ruangList, existingJadwal }) {
     const calculateEndTime = (startTime, sks) => {
-        const [hours, minutes] = startTime.split(":").map(Number);  // Mengambil jam dan menit
-        const startMinutes = hours * 60 + minutes;  // Menghitung waktu mulai dalam menit
+        const [hours, minutes] = startTime.split(":").map(Number);
+        const startMinutes = hours * 60 + minutes;
     
-        // Menghitung waktu selesai dalam menit (sks = 1 SKS = 60 menit)
         let endMinutes = startMinutes + (sks * 60);
     
-        // Batas waktu selesai tidak boleh lebih dari 20:40 (1240 menit)
         const maxEndTime = 20 * 60 + 40;
     
-        // Jika waktu selesai melebihi batas, atur ke batas waktu selesai
         if (endMinutes > maxEndTime) {
             endMinutes = maxEndTime;
         }
     
-        const endHours = Math.floor(endMinutes / 60);  // Jam selesai
-        const endMins = endMinutes % 60;  // Menit selesai
+        const endHours = Math.floor(endMinutes / 60);
+        const endMins = endMinutes % 60;
     
         const endTime = `${String(endHours).padStart(2, '0')}:${String(endMins).padStart(2, '0')}`;
     
         return endTime;
     };
     
-
-    const [formData, setFormData] = useState({
+    
+    // Initial form state as a function to allow easy resetting
+    const getInitialFormState = () => ({
         kodeMK: mataKuliah.kode_mk, 
-        kode_prodi: 'IF123', // Auto-fill default value
+        kode_prodi: 'IF123',
         dosen: existingJadwal?.dosen_mk_id || '', 
         ruang: existingJadwal?.ruang_id || '',
         kelas: existingJadwal?.kelas || '',
@@ -81,11 +79,11 @@ function JadwalDetail({ user, roles, mataKuliah, dosenList, ruangList, existingJ
         waktuSelesai: existingJadwal?.jam_selesai || '',
         sks: mataKuliah.sks,
     });
-    
 
-    const [isKelasExist, setIsKelasExist] = useState(false); // Untuk cek kelas
+    const [formData, setFormData] = useState(getInitialFormState);
+    const [isKelasExist, setIsKelasExist] = useState(false);
     const [kelasError, setKelasError] = useState('');
-    const [showModal, setShowModal] = useState(false);  // Menambahkan state untuk kontrol modal
+    const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
         if (formData.waktuMulai) {
@@ -104,7 +102,6 @@ function JadwalDetail({ user, roles, mataKuliah, dosenList, ruangList, existingJ
         });
     };
 
-    // Fungsi untuk mengecek apakah kelas sudah terdaftar
     const checkKelasExistence = async (kelas) => {
         try {
             const response = await fetch(`/cek-jadwal/${formData.kodeMK}/${kelas}`);
@@ -122,16 +119,14 @@ function JadwalDetail({ user, roles, mataKuliah, dosenList, ruangList, existingJ
         }
     };
 
-    // Fungsi untuk menangani perubahan kelas
     const handleClassChange = (e) => {
         const selectedClass = e.target.value;
         setFormData({
             ...formData,
             kelas: selectedClass,
         });
-        checkKelasExistence(selectedClass); // Panggil fungsi cek kelas
+        checkKelasExistence(selectedClass);
     };
-    
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -140,10 +135,9 @@ function JadwalDetail({ user, roles, mataKuliah, dosenList, ruangList, existingJ
         const [startHour, startMinute] = startTime.split(":").map(Number);
         const startTotalMinutes = startHour * 60 + startMinute;
     
-        const minStartTime = 5 * 60 + 30; // 05:30 dalam menit
-        const maxEndTime = 20 * 60 + 40; // 20:40 dalam menit
+        const minStartTime = 5 * 60 + 30;
+        const maxEndTime = 20 * 60 + 40;
     
-        // Validasi waktu mulai
         if (startTotalMinutes < minStartTime) {
             alert("Waktu mulai tidak boleh lebih awal dari 05:30.");
             return;
@@ -153,13 +147,12 @@ function JadwalDetail({ user, roles, mataKuliah, dosenList, ruangList, existingJ
         const [endHour, endMinute] = endTime.split(":").map(Number);
         const endTotalMinutes = endHour * 60 + endMinute;
     
-        // Validasi waktu selesai
         if (endTotalMinutes > maxEndTime) {
             alert("Waktu selesai tidak boleh lebih dari 20:40.");
             return;
         }
     
-        setShowModal(true);  // Menampilkan modal saat form disubmit
+        setShowModal(true);
     };
 
     const confirmSubmit = () => {
@@ -167,27 +160,31 @@ function JadwalDetail({ user, roles, mataKuliah, dosenList, ruangList, existingJ
 
         const payload = {
             kode_mk: formData.kodeMK,
-            nip_dosen: formData.dosen, // Ganti `dosen` menjadi `nip_dosen`
-            nama_ruang: formData.ruang, // Ganti `ruang_id` menjadi `nama_ruang`
-            kode_prodi: formData.kode_prodi, // Tambahkan `kode_prodi` jika diperlukan
+            nip_dosen: formData.dosen,
+            nama_ruang: formData.ruang,
+            kode_prodi: formData.kode_prodi,
             kelas: formData.kelas,
             hari: formData.hari,
             jam_mulai: formData.waktuMulai,
             jam_selesai: formData.waktuSelesai,
         };
-        console.log(payload)
         
-        console.log("/Kaprodi/simpanJadwal");
         axios.post('/Kaprodi/simpanJadwal', payload)
-        .then(response => console.log(response))
-        .catch(error => console.error(error));
-        
-    
-        
+        .then(response => {
+            console.log(response);
+            // Reset form to initial state after successful submission
+            setFormData(getInitialFormState());
+            // Optional: Add a success message or notification
+            alert('Jadwal berhasil disimpan!');
+        })
+        .catch(error => {
+            console.error(error);
+            alert('Gagal menyimpan jadwal. Silakan coba lagi.');
+        });
     };
     
     const cancelSubmit = () => {
-        setShowModal(false);  // Menutup modal jika user cancel
+        setShowModal(false);
     };
 
     const handleDelete = () => {
@@ -230,96 +227,95 @@ function JadwalDetail({ user, roles, mataKuliah, dosenList, ruangList, existingJ
                 <div className="mt-6">
                     <h3 className="text-xl font-bold">Pengaturan Jadwal</h3>
                     <form className="my-4 space-y-4" onSubmit={handleSubmit}>
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-            <label className="block font-bold text-gray-700">Hari</label>
-            <select
-                name="hari"
-                value={formData.hari}
-                onChange={handleChange}
-                className="border border-gray-300 rounded p-2 w-full"
-            >
-                <option value="">Pilih Hari</option>
-                {["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"].map((hari) => (
-                    <option key={hari} value={hari}>
-                        {hari}
-                    </option>
-                ))}
-            </select>
-        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block font-bold text-gray-700">Hari</label>
+                                <select
+                                    name="hari"
+                                    value={formData.hari}
+                                    onChange={handleChange}
+                                    className="border border-gray-300 rounded p-2 w-full"
+                                >
+                                    <option value="">Pilih Hari</option>
+                                    {["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"].map((hari) => (
+                                        <option key={hari} value={hari}>
+                                            {hari}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
 
-        <div>
-            <label className="block font-bold text-gray-700">Kelas</label>
-            <select
-                name="kelas"
-                value={formData.kelas}
-                onChange={handleClassChange}
-                className="border border-gray-300 rounded p-2 w-full"
-            >
-                <option value="">Pilih Kelas</option>
-                {["A", "B", "C", "D", "E", "F"].map((kelas) => (
-                    <option key={kelas} value={kelas}>
-                        {kelas}
-                    </option>
-                ))}
-            </select>
-            {kelasError && <p className="text-red-500 text-sm mt-1">{kelasError}</p>}  {/* Tampilkan pesan error */}
-        </div>
-    </div>
+                            <div>
+                                <label className="block font-bold text-gray-700">Kelas</label>
+                                <select
+                                    name="kelas"
+                                    value={formData.kelas}
+                                    onChange={handleClassChange}
+                                    className="border border-gray-300 rounded p-2 w-full"
+                                >
+                                    <option value="">Pilih Kelas</option>
+                                    {["A", "B", "C", "D", "E", "F"].map((kelas) => (
+                                        <option key={kelas} value={kelas}>
+                                            {kelas}
+                                        </option>
+                                    ))}
+                                </select>
+                                {kelasError && <p className="text-red-500 text-sm mt-1">{kelasError}</p>}
+                            </div>
+                        </div>
 
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <InputField
-            label="Waktu Mulai"
-            type="time"
-            name="waktuMulai"
-            value={formData.waktuMulai}
-            onChange={handleChange}
-            required
-            placeholder="Waktu Mulai"
-        />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <InputField
+                                label="Waktu Mulai"
+                                type="time"
+                                name="waktuMulai"
+                                value={formData.waktuMulai}
+                                onChange={handleChange}
+                                required
+                                placeholder="Waktu Mulai"
+                            />
 
-        <InputField
-            label="Waktu Selesai"
-            type="time"
-            name="waktuSelesai"
-            value={formData.waktuSelesai}
-            onChange={handleChange}
-            required
-            placeholder="Waktu Selesai"
-            readOnly
-        />
-    </div>
+                            <InputField
+                                label="Waktu Selesai"
+                                type="time"
+                                name="waktuSelesai"
+                                value={formData.waktuSelesai}
+                                onChange={handleChange}
+                                required
+                                placeholder="Waktu Selesai"
+                                readOnly
+                            />
+                        </div>
 
-    <SelectField
-        label="Ruang Kelas"
-        name="ruang"
-        value={formData.ruang}
-        onChange={handleChange}
-        options={ruangList}  // RuangList sudah terupdate dengan ruang yang masih tersedia
-        labelKey="nama_ruang"
-    />
+                        <SelectField
+                            label="Ruang Kelas"
+                            name="ruang"
+                            value={formData.ruang}
+                            onChange={handleChange}
+                            options={ruangList}
+                            labelKey="nama_ruang"
+                        />
 
-    <div className="mt-4 flex justify-between">
-        {existingJadwal ? (
-            <button
-                type="button"
-                onClick={handleDelete}
-                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-            >
-                Hapus Jadwal
-            </button>
-        ) : null}
+                        <div className="mt-4 flex justify-between">
+                            {existingJadwal ? (
+                                <button
+                                    type="button"
+                                    onClick={handleDelete}
+                                    className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                                >
+                                    Hapus Jadwal
+                                </button>
+                            ) : null}
 
-        <button
-            type="submit"
-            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-            disabled={isKelasExist}  // Disable jika kelas sudah ada
-        >
-            {existingJadwal ? 'Update Jadwal' : 'Simpan Jadwal'}
-        </button>
-    </div>
-</form>
-
+                            <button
+                                type="submit"
+                                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                                disabled={isKelasExist}
+                            >
+                                {existingJadwal ? 'Update Jadwal' : 'Simpan Jadwal'}
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
 
