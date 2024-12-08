@@ -100,6 +100,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/Doswal/dashboard', [DoswalController::class, 'index'])->middleware(CheckRole::class.':Pembimbing Akademik')->name('doswal.index');
     Route::get('/Doswal/mahasiswaPerwalian', [DoswalController::class, 'mahasiswaPerwalian'])->middleware(CheckRole::class.':Pembimbing Akademik')->name('doswal.mahasiswaPerwalian');
     Route::get('/Doswal/verifikasiIRS', [DoswalController::class, 'verifikasiIRS'])->middleware(CheckRole::class.':Pembimbing Akademik')->name('doswal.verifikasiIRS');
+    Route::get('/Doswal/VerifikasiIRS/{angkatan}', [DoswalController::class, 'verifikasiIRSByAngkatan'])->middleware(CheckRole::class.':Pembimbing Akademik')->name('doswal.VerifikasiIRSByAngkatan');
+    Route::post('/Doswal/VerifikasiIRS/approveAll', [DoswalController::class, 'approveAll'])->middleware(CheckRole::class . ':Pembimbing Akademik')->name('doswal.approveAll');
     Route::get('/Doswal/statusPerkembangan', [DoswalController::class, 'statusPerkembangan'])->middleware(CheckRole::class.':Pembimbing Akademik')->name('doswal.statusPerkembangan');
     Route::get('/Doswal/monitoringMK', [DoswalController::class, 'monitoringMK'])->middleware(CheckRole::class.':Pembimbing Akademik')->name('doswal.monitoringMK');
     Route::get('/Kaprodi/dashboard', [KaprodiController::class, 'index'])->middleware(CheckRole::class.':Ketua Prodi')->name('kaprodi.index');
@@ -114,10 +116,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/BagianAkademik/KelolaProgramStudi/{id}', [BagianAkademikController::class, 'updateProgramStudi'])->name('bagianakademik.updateProgramStudi');
     Route::delete('/BagianAkademik/KelolaProgramStudi/{id}', [BagianAkademikController::class, 'destroyProgramStudi'])->name('bagianakademik.destroyProgramStudi');
     Route::get('/BagianAkademik/AlokasiRuangan',[BagianAkademikController::class, 'getAlokasi'])->middleware(CheckRole::class.':Bagian Akademik')->name('bagianakademik.AlokasiRuangan');
-    Route::get('/doswal/mahasiswaPerwalian', [MhsController::class, 'mahasiswaPerwalian'])->name('mahasiswa.perwalian');
     Route::post('/BagianAkademik/AlokasiRuangan/store', [BagianAkademikController::class, 'storeAlokasi'])->name('bagianakademik.storeAlokasi');
     Route::put('/BagianAkademik/AlokasiRuangan/{id}', [BagianAkademikController::class, 'updateAlokasi'])->name('bagianakademik.updateAlokasi');
     Route::delete('/BagianAkademik/AlokasiRuangan/{id}', [BagianAkademikController::class, 'destroyAlokasi'])->name('bagianakademik.destroyAlokasi');
+
+    Route::get('/Kaprodi/dashboard', [KaprodiController::class, 'index'])->middleware(CheckRole::class . ':Ketua Prodi')->name('kaprodi.index');
+    Route::get('/Kaprodi/jadwalKuliah', [KaprodiController::class, 'jadwalKuliah'])->middleware(CheckRole::class . ':Ketua Prodi')->name('kaprodi.jadwalKuliah');
+    Route::get('/Kaprodi/jadwalDetail/{id}', [KaprodiController::class, 'jadwalDetail'])->middleware(CheckRole::class . ':Ketua Prodi')->name('kaprodi.jadwalDetail');
+    Route::post('/Kaprodi/simpanJadwal', [KaprodiController::class, 'simpanJadwal'])->name('kaprodi.simpanJadwal');
+
+    Route::delete('/Kaprodi/hapusJadwal/{id}', [KaprodiController::class, 'hapusJadwal'])->middleware(CheckRole::class . ':Ketua Prodi')->name('kaprodi.hapusJadwal');
+    Route::get('/Kaprodi/mahasiswa', [KaprodiController::class, 'mahasiswa'])->middleware(CheckRole::class . ':Ketua Prodi')->name('kaprodi.mahasiswa');
+    Route::get('/Kaprodi/monitoring', [KaprodiController::class, 'monitoring'])->middleware(CheckRole::class . ':Ketua Prodi')->name('kaprodi.monitoring');
+    Route::get('/cek-jadwal/{kode_mk}/{kelas}', [KaprodiController::class, 'cekJadwal']);
+    Route::post('/Kaprodi/mata-kuliah', [KaprodiController::class, 'tambahMataKuliah'])->middleware('auth')->name('kaprodi.mataKuliah.store');
+    Route::post('/mata-kuliah', [KaprodiController::class, 'tambahMataKuliah'])->middleware('auth');
+    Route::post('/kaprodi/get-available-rooms', [KaprodiController::class, 'getAvailableRooms']);
+
+
+
 });
 
 Route::middleware('auth')->group(function () {
