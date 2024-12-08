@@ -100,6 +100,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/Doswal/dashboard', [DoswalController::class, 'index'])->middleware(CheckRole::class.':Pembimbing Akademik')->name('doswal.index');
     Route::get('/Doswal/mahasiswaPerwalian', [DoswalController::class, 'mahasiswaPerwalian'])->middleware(CheckRole::class.':Pembimbing Akademik')->name('doswal.mahasiswaPerwalian');
     Route::get('/Doswal/verifikasiIRS', [DoswalController::class, 'verifikasiIRS'])->middleware(CheckRole::class.':Pembimbing Akademik')->name('doswal.verifikasiIRS');
+    Route::get('/Doswal/VerifikasiIRS/{angkatan}', [DoswalController::class, 'verifikasiIRSByAngkatan'])->middleware(CheckRole::class.':Pembimbing Akademik')->name('doswal.VerifikasiIRSByAngkatan');
+    Route::post('/Doswal/VerifikasiIRS/approveAll', [DoswalController::class, 'approveAll'])->middleware(CheckRole::class . ':Pembimbing Akademik')->name('doswal.approveAll');
     Route::get('/Doswal/statusPerkembangan', [DoswalController::class, 'statusPerkembangan'])->middleware(CheckRole::class.':Pembimbing Akademik')->name('doswal.statusPerkembangan');
     Route::get('/Doswal/monitoringMK', [DoswalController::class, 'monitoringMK'])->middleware(CheckRole::class.':Pembimbing Akademik')->name('doswal.monitoringMK');
     Route::get('/Kaprodi/dashboard', [KaprodiController::class, 'index'])->middleware(CheckRole::class.':Ketua Prodi')->name('kaprodi.index');
@@ -114,7 +116,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/BagianAkademik/KelolaProgramStudi/{id}', [BagianAkademikController::class, 'updateProgramStudi'])->name('bagianakademik.updateProgramStudi');
     Route::delete('/BagianAkademik/KelolaProgramStudi/{id}', [BagianAkademikController::class, 'destroyProgramStudi'])->name('bagianakademik.destroyProgramStudi');
     Route::get('/BagianAkademik/AlokasiRuangan',[BagianAkademikController::class, 'getAlokasi'])->middleware(CheckRole::class.':Bagian Akademik')->name('bagianakademik.AlokasiRuangan');
-    Route::get('/doswal/mahasiswaPerwalian', [MhsController::class, 'mahasiswaPerwalian'])->name('mahasiswa.perwalian');
     Route::post('/BagianAkademik/AlokasiRuangan/store', [BagianAkademikController::class, 'storeAlokasi'])->name('bagianakademik.storeAlokasi');
     Route::put('/BagianAkademik/AlokasiRuangan/{id}', [BagianAkademikController::class, 'updateAlokasi'])->name('bagianakademik.updateAlokasi');
     Route::delete('/BagianAkademik/AlokasiRuangan/{id}', [BagianAkademikController::class, 'destroyAlokasi'])->name('bagianakademik.destroyAlokasi');
