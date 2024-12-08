@@ -8,10 +8,14 @@ function Dashboard({
     user,
     roles,
     mahasiswa,
+    tahun_ajaran,
     prodi,
     doswal,
     rekapAll,
     rekapsmt,
+    ipk,
+    sksk,
+    ipData,
 }) {
     // Fungsi untuk memanipulasi dan mengurutkan data
     function formatLineChartData(data) {
@@ -23,9 +27,7 @@ function Dashboard({
             }));
     }
 
-    const LineChartData = formatLineChartData(rekapAll);
-
-    function sksk() {}
+    const LineChartData = formatLineChartData(ipData);
 
     return (
         <AuthenticatedLayout role={roles}>
@@ -88,16 +90,15 @@ function Dashboard({
                             <div className="flex mt-[20px]">
                                 <div className="items-center flex-1 flex flex-col ">
                                     <p>IPK</p>
-                                    {/* {JSON.stringify(rekapsmt)} */}
-                                    <p>{rekapsmt[0].IPK}</p>
+                                    <p>{ipk}</p>
                                 </div>
                                 <div className="items-center flex-1 flex flex-col">
                                     <p>SKSK</p>
-                                    <p>84</p>
+                                    <p>{sksk}</p>
                                 </div>
                                 <div className="items-center flex-1 flex flex-col">
                                     <p>Semester Akademik</p>
-                                    <p>2024/2025</p>
+                                    <p> {tahun_ajaran.tahun}</p>
                                 </div>
                             </div>
                         </div>

@@ -4,11 +4,11 @@ import NavLink from "@/Components/NavLink";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import { Link, usePage } from "@inertiajs/react";
 import { useState } from "react";
+import logoImage from "@/../../public/LogoLeftBar.svg";
 
 function AuthenticatedLayout1({ header, children, role }) {
     const user = usePage().props.auth.user;
     const roles = role;
-
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
@@ -71,8 +71,8 @@ function AuthenticatedLayout1({ header, children, role }) {
                         IRS
                     </NavLink>
                     <NavLink
-                    // href={route("irs.index")}
-                    // active={route().current("irs.index")}
+                        href={route("mhs.KHS")}
+                        active={route().current("mhs.KHS")}
                     >
                         KHS
                     </NavLink>
@@ -249,7 +249,7 @@ function AuthenticatedLayout1({ header, children, role }) {
                         <div className="flex shrink-0 items-center ">
                             <Link href={getDashboardRoute()}>
                                 <img
-                                    src="../LogoLeftBar.svg"
+                                    src={logoImage}
                                     alt=""
                                     className="w-[200px]"
                                 />
@@ -270,7 +270,7 @@ function AuthenticatedLayout1({ header, children, role }) {
                                                 type="button"
                                                 className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-black transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none "
                                             >
-                                                test
+                                                SIAL
                                                 <svg
                                                     className="-me-0.5 ms-2 h-4 w-4"
                                                     xmlns="http://www.w3.org/2000/svg"
