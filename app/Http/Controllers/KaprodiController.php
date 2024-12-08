@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DosenMk;
+use App\Models\Dosenpegawai;
 use App\Models\User;
 use App\Models\MataKuliah;
 use App\Models\Jadwal;
@@ -19,10 +20,12 @@ class KaprodiController extends Controller
     {
         $user = Auth::user();
         $roles = session('selected_role', 'default');
+        $dosen = Dosenpegawai::where('user_id', $user->user_id)->first();
         
         return Inertia::render('Kaprodi/Dashboard', [
             'user' => $user,
             'roles' => $roles,
+            'dosen' => $dosen
         ]);
     }
 
@@ -101,6 +104,7 @@ class KaprodiController extends Controller
             'ruangList' => $ruangList,
         ]);
     }
+
     public function simpanJadwal(Request $request)
 {
 
@@ -131,7 +135,7 @@ class KaprodiController extends Controller
             'jam_mulai' => $validatedData['jam_mulai'],
             'jam_selesai' => $validatedData['jam_selesai'],
             'kelas' => $validatedData['kelas'],
-            'status' => 'pending',
+            'status' => 'onprocess',
 
         ]);
 
@@ -221,7 +225,7 @@ class KaprodiController extends Controller
     {
         $user = Auth::user();
         $roles = session('selected_role', 'default');
-        $students = DB::table('students')->select('id', 'nama', 'nim', 'angkatan', 'status_irs')->get();
+        $students = DB::table('mahasiswa')->select('NIM', 'Name', 'angkatan', 'statu')->get();
 
         return Inertia::render('Kaprodi/Mahasiswa', [
             'user' => $user,

@@ -213,28 +213,16 @@ function AuthenticatedLayout1({ header, children, role }) {
             return (
                 <>
                     <NavLink
-                    // href={route("kaprodi.index")}
-                    // active={route().current("kaprodi.index")}
+                        href={route("kaprodi.index")}
+                        active={route().current("kaprodi.index")}
                     >
                         Dashboard
                     </NavLink>
                     <NavLink
-                    // href={route("kelolaJadwal.index")}
-                    // active={route().current("kelolaJadwal.index")}
+                        href={route("kaprodi.jadwalKuliah")}
+                        active={route().current("kaprodi.jadwalKuliah")}
                     >
                         Jadwal Kuliah
-                    </NavLink>
-                    <NavLink
-                    // href={route("kelolaJadwal.index")}
-                    // active={route().current("kelolaJadwal.index")}
-                    >
-                        Mahasiswa
-                    </NavLink>
-                    <NavLink
-                    // href={route("kelolaJadwal.index")}
-                    // active={route().current("kelolaJadwal.index")}
-                    >
-                        Monitoring Mata Kuliah
                     </NavLink>
                 </>
             );
