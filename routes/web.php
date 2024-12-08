@@ -88,6 +88,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/BagianAkademik/AlokasiRuangan/store', [BagianAkademikController::class, 'storeAlokasi'])->name('bagianakademik.storeAlokasi');
     Route::put('/BagianAkademik/AlokasiRuangan/{id}', [BagianAkademikController::class, 'updateAlokasi'])->name('bagianakademik.updateAlokasi');
     Route::delete('/BagianAkademik/AlokasiRuangan/{id}', [BagianAkademikController::class, 'destroyAlokasi'])->name('bagianakademik.destroyAlokasi');
+
+    Route::get('/Kaprodi/dashboard', [KaprodiController::class, 'index'])->middleware(CheckRole::class . ':Ketua Prodi')->name('kaprodi.index');
+    Route::get('/Kaprodi/jadwalKuliah', [KaprodiController::class, 'jadwalKuliah'])->middleware(CheckRole::class . ':Ketua Prodi')->name('kaprodi.jadwalKuliah');
+    Route::get('/Kaprodi/jadwalDetail/{id}', [KaprodiController::class, 'jadwalDetail'])->middleware(CheckRole::class . ':Ketua Prodi')->name('kaprodi.jadwalDetail');
+    Route::post('/Kaprodi/simpanJadwal', [KaprodiController::class, 'simpanJadwal'])->name('kaprodi.simpanJadwal');
+
+    Route::delete('/Kaprodi/hapusJadwal/{id}', [KaprodiController::class, 'hapusJadwal'])->middleware(CheckRole::class . ':Ketua Prodi')->name('kaprodi.hapusJadwal');
+    Route::get('/Kaprodi/mahasiswa', [KaprodiController::class, 'mahasiswa'])->middleware(CheckRole::class . ':Ketua Prodi')->name('kaprodi.mahasiswa');
+    Route::get('/Kaprodi/monitoring', [KaprodiController::class, 'monitoring'])->middleware(CheckRole::class . ':Ketua Prodi')->name('kaprodi.monitoring');
+    Route::get('/cek-jadwal/{kode_mk}/{kelas}', [KaprodiController::class, 'cekJadwal']);
+    Route::post('/Kaprodi/mata-kuliah', [KaprodiController::class, 'tambahMataKuliah'])->middleware('auth')->name('kaprodi.mataKuliah.store');
+    Route::post('/mata-kuliah', [KaprodiController::class, 'tambahMataKuliah'])->middleware('auth');
+    Route::post('/kaprodi/get-available-rooms', [KaprodiController::class, 'getAvailableRooms']);
+
+
+
 });
 
 Route::middleware('auth')->group(function () {

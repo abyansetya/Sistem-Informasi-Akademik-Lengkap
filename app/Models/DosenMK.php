@@ -18,6 +18,7 @@ class DosenMk extends Model
     // Kolom yang dapat diisi secara massal
     protected $fillable = [
         'dosen_mk_id',
+        'nama_dosen',
         'NIP',
         'kode_mk',
         'created_at',
