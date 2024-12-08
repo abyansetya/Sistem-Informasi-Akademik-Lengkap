@@ -3,7 +3,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout1";
 import { Head, Link } from "@inertiajs/react";
 import Calendar from "@/Components/Calendar";
 
-function Dashboard({ user, roles }) {
+function Dashboard({ user, roles, dosen }) {
     return (
         <AuthenticatedLayout role={roles}>
             <Head title="Dashboard" />
@@ -20,7 +20,7 @@ function Dashboard({ user, roles }) {
                                 />
                                 <div className="flex flex-col justify-center">
                                     <p className="font-medium text-[24px] md:text-[18px] whitespace-nowrap">
-                                        {user.name}
+                                        {dosen.Name}
                                     </p>
                                     <p className="text-cgrey-2 text-[12px] md:text-[13px]">
                                         Dosen Wali
@@ -38,7 +38,11 @@ function Dashboard({ user, roles }) {
                                 className="hover:shadow-md transition-shadow duration-300"
                             >
                                 <div className="flex flex-row border rounded-[10px] shadow-lg shadow-gray-100/50 p-4 items-center justify-between bg-white w-full h-full hover:bg-gray-50">
-                                    <img src="../mahasiswa.svg" alt="" className="h-[30px]"/>
+                                    <img
+                                        src="../mahasiswa.svg"
+                                        alt=""
+                                        className="h-[30px]"
+                                    />
                                     <p className="text-[16px] md:text-[24px] font-medium">
                                         Mahasiswa perwalian
                                     </p>
@@ -51,7 +55,11 @@ function Dashboard({ user, roles }) {
                                 className="hover:shadow-md transition-shadow duration-300"
                             >
                                 <div className="flex flex-row border rounded-[10px] shadow-lg shadow-gray-100/50 p-4 items-center justify-between bg-white w-full h-full hover:bg-gray-50">
-                                    <img src="../monitoring.svg" alt="" className="h-[30px]"/>
+                                    <img
+                                        src="../monitoring.svg"
+                                        alt=""
+                                        className="h-[30px]"
+                                    />
                                     <p className="text-[16px] md:text-[24px] font-medium">
                                         Monitoring Matakuliah
                                     </p>
@@ -63,7 +71,11 @@ function Dashboard({ user, roles }) {
                                 className="hover:shadow-md transition-shadow duration-300"
                             >
                                 <div className="flex flex-row border rounded-[10px] shadow-lg shadow-gray-100/50 p-4 items-center justify-between bg-white w-full h-full hover:bg-gray-50">
-                                    <img src="../verifikasi.svg" alt="" className="h-[30px]"/>
+                                    <img
+                                        src="../verifikasi.svg"
+                                        alt=""
+                                        className="h-[30px]"
+                                    />
                                     <p className="text-[16px] md:text-[24px] font-medium">
                                         Verifikasi IRS
                                     </p>
@@ -75,7 +87,11 @@ function Dashboard({ user, roles }) {
                                 className="hover:shadow-md transition-shadow duration-300"
                             >
                                 <div className="flex flex-row border rounded-[10px] shadow-lg shadow-gray-100/50 p-4 items-center justify-between bg-white w-full h-full hover:bg-gray-50">
-                                    <img src="../perkembangan.svg" alt="" className="h-[30px]"/>
+                                    <img
+                                        src="../perkembangan.svg"
+                                        alt=""
+                                        className="h-[30px]"
+                                    />
                                     <p className="text-[16px] md:text-[24px] font-medium">
                                         Status Perkembangan Mahasiswa
                                     </p>
