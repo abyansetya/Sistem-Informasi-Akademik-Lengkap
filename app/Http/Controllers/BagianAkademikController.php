@@ -11,6 +11,7 @@ use App\Models\RuangKelas;
 use App\Models\ProgramStudi;
 use App\Models\Ruang;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class BagianAkademikController extends Controller
 {
@@ -168,60 +169,73 @@ class BagianAkademikController extends Controller
     
 
 
+  
+
     public function storeAlokasi(Request $request)
     {
-        // Validasi data yang diterima dari frontend
+        // Validasi data input
         $validatedData = $request->validate([
-            'program_studi_id' => 'required|integer',
-            'ruang_kelas_id' => 'required|array',
-            'ruang_kelas_id.*' => 'integer',
+            'kode_prodi' => 'required|exists:program_studi,kode_prodi',
+            'ruang_id' => 'required|array',
+            'ruang_id.*' => 'exists:ruang,id',
         ]);
     
-        // Iterasi melalui setiap ruang_kelas_id yang diterima
-        foreach ($validatedData['ruang_kelas_id'] as $ruangId) {
-            $alokasiBaru = Ruang::create([
-                'program_studi_id' => $validatedData['program_studi_id'],
-                'ruang_kelas_id' => $ruangId,
-                'status' => 'pending',
-            ]);
+        // Iterasi melalui ruang yang dipilih dan update
+        foreach ($validatedData['ruang_id'] as $ruangId) {
+            // Menggunakan query builder untuk update alokasi ruang
+            DB::table('ruang')
+                ->where('id', $ruangId)
+                ->whereNull('kode_prodi') // Hanya update jika kode_prodi masih null (belum dialokasikan)
+                ->update(['kode_prodi' => $validatedData['kode_prodi']]);
         }
     
-        redirect()->back()->with('success', 'Alokasi berhasil ditambahkan');
+        return redirect()->back()->with('success', 'Alokasi berhasil ditambahkan');
     }
     
 
-    public function getAlokasi(){
-        $alokasi = Ruang::with('programStudi')->get();
+    
+    
+
+    public function getAlokasi()
+    {
         return Inertia::render('BagianAkademik/AlokasiRuangan', [
-            'alokasiData' => $alokasi,
             'programStudiData' => ProgramStudi::all(),
             'ruangKelasData' => Ruang::all(),
         ]);
     }
+    
 
     public function updateAlokasi(Request $request, $id)
 {
     // Validasi input
     $validatedData = $request->validate([
         'program_studi_id' => 'required|exists:program_studi,id',
-        'ruang_kelas_id' => 'required|array',
-        'ruang_kelas_id.*' => 'exists:ruang_kelas,id',
+        'ruang_id' => 'required|array',
+        'ruang_id.*' => 'exists:ruang,id',
     ]);
 
+    // Ambil kode prodi yang baru
+    $kodeProdi = $validatedData['program_studi_id'];
+
     // Cari alokasi yang akan diupdate
-    $alokasi = Ruang::find($id);
+    foreach ($validatedData['ruang_id'] as $ruangId) {
+        // Cari ruang berdasarkan ID
+        $ruang = Ruang::find($ruangId);
 
-    if ($alokasi) {
-        // Update program studi dan ruangan kelas
-        $alokasi->program_studi_id = $validatedData['program_studi_id'];
-        $alokasi->ruang_kelas_id = $validatedData['ruang_kelas_id'];
-        $alokasi->save();
-
-        return redirect()->back()->with('success', 'Alokasi berhasil diupdate');
-    } else {
-        return redirect()->back()->with('error', 'Alokasi tidak ditemukan');
+        if ($ruang) {
+            // Hanya update jika kode_prodi masih null
+            if (is_null($ruang->kode_prodi)) {
+                $ruang->update([
+                    'kode_prodi' => $kodeProdi,
+                ]);
+            }
+        }
     }
+
+    return redirect()->back()->with('success', 'Alokasi berhasil diupdate');
 }
+
+    
 
 public function destroyAlokasi($id)
 {
