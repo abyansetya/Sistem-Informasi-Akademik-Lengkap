@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout1";
-import { Head } from "@inertiajs/react";
+import { Head, Link } from "@inertiajs/react";
+import verifikasi from "@/../../public/verifikasi.svg";
 import axios from "axios";
-import { jsPDF } from "jspdf";
+import Swal from "sweetalert2";
 
 function VerifikasiIRSByAngkatan({ roles, mahasiswa = [], angkatan }) {
     const [searchQuery, setSearchQuery] = useState(""); // Query pencarian
@@ -10,6 +11,22 @@ function VerifikasiIRSByAngkatan({ roles, mahasiswa = [], angkatan }) {
     const [isDropdownVisible, setIsDropdownVisible] = useState(false); // Status dropdown
     const [selectedAngkatan, setSelectedAngkatan] = useState(""); // Angkatan terpilih
     const [isSubmitting, setIsSubmitting] = useState(false); // Status submit
+    const [updatedMahasiswa, setUpdatedMahasiswa] = useState(mahasiswa); // State untuk melacak status mahasiswa yang diperbarui
+
+    useEffect(() => {
+        const fetchMahasiswa = async () => {
+            try {
+                const response = await axios.get(
+                    route("doswal.getMahasiswa", { angkatan })
+                );
+                setUpdatedMahasiswa(response.data); // Memperbarui state mahasiswa dengan data terbaru
+            } catch (error) {
+                console.error("Gagal memuat data mahasiswa", error);
+            }
+        };
+
+        fetchMahasiswa();
+    }, [angkatan]); // Memuat data mahasiswa berdasarkan angkatan yang dipilih
 
     const handleSearchChange = (e) => {
         const query = e.target.value;
@@ -37,7 +54,7 @@ function VerifikasiIRSByAngkatan({ roles, mahasiswa = [], angkatan }) {
     }, []);
 
     const filteredMahasiswa = useMemo(() => {
-        return mahasiswa
+        return updatedMahasiswa
             .filter((mhs) => {
                 const matchesSearch = mhs.Name.toLowerCase().includes(
                     searchQuery.toLowerCase()
@@ -49,40 +66,92 @@ function VerifikasiIRSByAngkatan({ roles, mahasiswa = [], angkatan }) {
                 return matchesSearch && matchesAngkatan;
             })
             .sort((a, b) => a.NIM - b.NIM);
-    }, [mahasiswa, searchQuery, selectedAngkatan]);
+    }, [updatedMahasiswa, searchQuery, selectedAngkatan]);
 
-    const handleApproveAll = async () => {
-        console.time("approveAll"); // Mulai pengukuran
-        setIsSubmitting(true); // Indikator loading
-        try {
-            await axios.post(route("doswal.approveAll"), {
-                angkatan,
-            });
-            console.timeEnd("approveAll"); // Akhiri pengukuran
-            alert("Semua mahasiswa berhasil disetujui!");
-            setIsSubmitting(false);
-        } catch (error) {
-            console.error("Gagal menyetujui semua:", error);
-            setIsSubmitting(false);
+    const handleApprove = async (nim) => {
+        const result = await Swal.fire({
+            title: "Konfirmasi",
+            text: `Apakah Anda yakin ingin menyetujui IRS mahasiswa dengan NIM ${nim}?`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ya, setujui",
+            cancelButtonText: "Batal",
+        });
+
+        if (result.isConfirmed) {
+            try {
+                // Perbarui status mahasiswa di frontend menjadi 'approved'
+                const updated = updatedMahasiswa.map((mhs) =>
+                    mhs.NIM === nim
+                        ? { ...mhs, status_approval: "approved" }
+                        : mhs
+                );
+                setUpdatedMahasiswa(updated);
+
+                // Simpan status baru ke server
+                await axios.post(route("doswal.approveIRS"), { nim });
+
+                Swal.fire({
+                    icon: "success",
+                    title: "IRS sudah disetujui",
+                    text: `IRS mahasiswa dengan NIM ${nim} berhasil disetujui.`,
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+            } catch (error) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Terjadi Kesalahan",
+                    text:
+                        error.response?.data?.message ||
+                        "Gagal menyetujui IRS. Silakan coba lagi nanti.",
+                    confirmButtonText: "OK",
+                });
+            }
         }
     };
 
-    // Fungsi untuk mengunduh IRS
-    const handleDownloadIRS = async (nim) => {
-        try {
-            const response = await axios.get(route("downloadIRS", { nim }), {
-                responseType: "blob",
-            });
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement("a");
-            link.href = url;
-            link.setAttribute("download", `IRS_${nim}.pdf`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        } catch (error) {
-            console.error("Gagal mengunduh IRS:", error);
-            alert("Gagal mengunduh IRS");
+    const handleReset = async (nim) => {
+        const result = await Swal.fire({
+            title: "Konfirmasi",
+            text: `Apakah Anda yakin ingin mereset status IRS mahasiswa dengan NIM ${nim} ke status "Onprocess"?`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ya, reset",
+            cancelButtonText: "Batal",
+        });
+
+        if (result.isConfirmed) {
+            try {
+                // Kirimkan permintaan reset IRS ke backend
+                const response = await axios.post(route("doswal.resetIRS"), {
+                    nim,
+                });
+
+                // Perbarui status mahasiswa di frontend menjadi 'onprocess'
+                const updated = updatedMahasiswa.map((mhs) =>
+                    mhs.NIM === nim
+                        ? { ...mhs, status_approval: "onprocess" }
+                        : mhs
+                );
+                setUpdatedMahasiswa(updated);
+
+                Swal.fire({
+                    icon: "success",
+                    title: "Status berhasil di-reset",
+                    text: `IRS mahasiswa dengan NIM ${nim} berhasil di-reset ke status "Onprocess".`,
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+            } catch (error) {
+                console.error("Error:", error);
+                Swal.fire({
+                    icon: "error",
+                    title: "Terjadi Kesalahan",
+                    text: "Gagal mereset status IRS. Silakan coba lagi nanti.",
+                    confirmButtonText: "OK",
+                });
+            }
         }
     };
 
@@ -94,11 +163,11 @@ function VerifikasiIRSByAngkatan({ roles, mahasiswa = [], angkatan }) {
                     <div className="flex-col border border-gray-300 rounded-[10px] shadow-lg mt-5 bg-white p-6">
                         <div className="border-b-2 border-black w-[85%] mx-auto flex">
                             <img
-                                src="../verifikasi.svg"
+                                src={verifikasi}
                                 alt=""
                                 className="mr-4 h-[30px]"
                             />
-                            <p className="text-[24px] md:text-[22px] font-bold">
+                            <p className="text-[24px] md:text-[18px] font-bold">
                                 Verifikasi IRS
                             </p>
                         </div>
@@ -157,21 +226,6 @@ function VerifikasiIRSByAngkatan({ roles, mahasiswa = [], angkatan }) {
                                     </svg>
                                 </button>
                             </div>
-                            <div className="text-right ">
-                                <button
-                                    onClick={handleApproveAll}
-                                    className={`${
-                                        isSubmitting
-                                            ? "bg-green-500"
-                                            : "bg-white hover:bg-green-500"
-                                    } text-black hover:text-black px-4 py-2 border border-gray-300 rounded shadow`}
-                                    disabled={isSubmitting}
-                                >
-                                    {isSubmitting
-                                        ? "Menyetujui..."
-                                        : "Setujui Semua"}
-                                </button>
-                            </div>
                         </div>
 
                         {/* Table verifikasi IRS */}
@@ -187,54 +241,93 @@ function VerifikasiIRSByAngkatan({ roles, mahasiswa = [], angkatan }) {
                                                 NIM
                                             </th>
                                             <th className="px-4 py-2 font-normal text-[15px]">
-                                                IRS
+                                                Detail IRS
                                             </th>
                                             <th className="px-4 py-2 font-normal text-[15px]">
                                                 STATUS
                                             </th>
+                                            <th className="px-4 py-2 font-normal text-[15px]">
+                                                AKSI
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {filteredMahasiswa.map((mhs) => (
-                                            <tr
-                                                key={mhs.NIM}
-                                                className="text-center"
-                                            >
-                                                <td className="px-4 py-2 border-b">
-                                                    {mhs.Name}
-                                                </td>
-                                                <td className="px-4 py-2 border-b">
-                                                    {mhs.NIM}
-                                                </td>
-                                                <td className="px-4 py-2 border-b">
-                                                    <button
-                                                        onClick={() =>
-                                                            handleDownloadIRS(
-                                                                mhs.NIM
-                                                            )
-                                                        }
-                                                        className="text-blue-500 hover:text-blue-700"
-                                                    >
-                                                        Lihat
-                                                    </button>
-                                                </td>
-                                                <td className="px-4 py-2 border-b">
-                                                    <button
-                                                        className={`${
-                                                            mhs.status_approval ===
-                                                            "disetujui"
-                                                                ? "bg-green-500"
-                                                                : "bg-cred-1"
-                                                        } text-white px-4 py-2 rounded`}
-                                                    >
+                                        {filteredMahasiswa.map((mhs) => {
+                                            const statusText =
+                                                mhs.status_approval ===
+                                                "approved"
+                                                    ? "Disetujui"
+                                                    : mhs.status_approval ===
+                                                      "rejected"
+                                                    ? "Ditolak"
+                                                    : "Onprocess";
+                                            const statusColor =
+                                                mhs.status_approval ===
+                                                "approved"
+                                                    ? "text-green-500"
+                                                    : mhs.status_approval ===
+                                                      "rejected"
+                                                    ? "text-red-500"
+                                                    : "text-yellow-500";
+
+                                            return (
+                                                <tr
+                                                    key={mhs.NIM}
+                                                    className="text-center"
+                                                >
+                                                    <td className="px-4 py-2 border-b">
+                                                        {mhs.Name}
+                                                    </td>
+                                                    <td className="px-4 py-2 border-b">
+                                                        {mhs.NIM}
+                                                    </td>
+                                                    <td className="px-4 py-2 border-b">
+                                                        <Link
+                                                            href={route(
+                                                                "doswal.Jadwalirs",
+                                                                { nim: mhs.NIM }
+                                                            )}
+                                                            className="text-cgrey-0 hover:bg-blue-500 bg-blue-600 p-2 rounded"
+                                                        >
+                                                            Lihat IRS
+                                                        </Link>
+                                                    </td>
+                                                    <td className="px-4 py-2 border-b">
+                                                        <p
+                                                            className={`${statusColor} font-medium`}
+                                                        >
+                                                            {statusText}
+                                                        </p>
+                                                    </td>
+                                                    <td className="px-4 py-2 border-b">
                                                         {mhs.status_approval ===
-                                                        "disetujui"
-                                                            ? "Disetujui"
-                                                            : "Belum Disetujui"}
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
+                                                        "approved" ? (
+                                                            <button
+                                                                onClick={() =>
+                                                                    handleReset(
+                                                                        mhs.NIM
+                                                                    )
+                                                                }
+                                                                className="bg-gray-500 text-white rounded px-4 py-2"
+                                                            >
+                                                                Reset
+                                                            </button>
+                                                        ) : (
+                                                            <button
+                                                                onClick={() =>
+                                                                    handleApprove(
+                                                                        mhs.NIM
+                                                                    )
+                                                                }
+                                                                className="bg-green-500 text-white rounded px-4 py-2"
+                                                            >
+                                                                Setujui
+                                                            </button>
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
                                     </tbody>
                                 </table>
                             </div>

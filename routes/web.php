@@ -72,6 +72,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/Doswal/verifikasiIRS', [DoswalController::class, 'verifikasiIRS'])->middleware(CheckRole::class.':Pembimbing Akademik')->name('doswal.verifikasiIRS');
     Route::get('/Doswal/VerifikasiIRS/{angkatan}', [DoswalController::class, 'verifikasiIRSByAngkatan'])->middleware(CheckRole::class.':Pembimbing Akademik')->name('doswal.VerifikasiIRSByAngkatan');
     Route::post('/Doswal/VerifikasiIRS/approveAll', [DoswalController::class, 'approveAll'])->middleware(CheckRole::class . ':Pembimbing Akademik')->name('doswal.approveAll');
+    Route::post('/Doswal/VerifikasiIRSByAngkatan/approveIRS', [DoswalController::class, 'approveIRS'])->middleware(CheckRole::class . ':Pembimbing Akademik')->name('doswal.approveIRS');
+    Route::post('/Doswal/VerifikasiIRSByAngkatan/resetIRS', [DoswalController::class, 'resetIRS'])->middleware(CheckRole::class . ':Pembimbing Akademik')->name('doswal.resetIRS');
+    Route::get('/Doswal/VerifikasiIRSByAngkatan/{nim}', [DoswalController::class, 'Jadwalirs'])->middleware(CheckRole::class.':Pembimbing Akademik')->name('doswal.Jadwalirs');
     Route::get('/Doswal/statusPerkembangan', [DoswalController::class, 'statusPerkembangan'])->middleware(CheckRole::class.':Pembimbing Akademik')->name('doswal.statusPerkembangan');
     Route::get('/Doswal/monitoringMK', [DoswalController::class, 'monitoringMK'])->middleware(CheckRole::class.':Pembimbing Akademik')->name('doswal.monitoringMK');
     Route::get('/Kaprodi/dashboard', [KaprodiController::class, 'index'])->middleware(CheckRole::class.':Ketua Prodi')->name('kaprodi.index');

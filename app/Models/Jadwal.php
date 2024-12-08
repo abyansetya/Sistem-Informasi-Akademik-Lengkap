@@ -53,6 +53,4 @@ class Jadwal extends Model
     {
         return $this->belongsTo(Kelas::class, 'kelas', 'nama_kelas');
     }
-
-
 }

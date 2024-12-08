@@ -4,11 +4,11 @@ import NavLink from "@/Components/NavLink";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import { Link, usePage } from "@inertiajs/react";
 import { useState } from "react";
+import logoImage from "@/../../public/LogoLeftBar.svg";
 
 function AuthenticatedLayout1({ header, children, role }) {
     const user = usePage().props.auth.user;
     const roles = role;
-
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
@@ -249,7 +249,7 @@ function AuthenticatedLayout1({ header, children, role }) {
                         <div className="flex shrink-0 items-center ">
                             <Link href={getDashboardRoute()}>
                                 <img
-                                    src="../LogoLeftBar.svg"
+                                    src={logoImage}
                                     alt=""
                                     className="w-[200px]"
                                 />
