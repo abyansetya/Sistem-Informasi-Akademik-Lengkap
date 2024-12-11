@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout1';
 import { Head, Link, useForm } from "@inertiajs/react";
 import { router } from '@inertiajs/react';
 import Swal from 'sweetalert2';
-import { destroy } from '@inertiajs/inertia';
+
 
 
 function KelolaRuang({ ruang }) {

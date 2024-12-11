@@ -69,30 +69,51 @@ class BagianAkademikController extends Controller
      */
     public function updateRuang(Request $request, $id)
     {
-    // Validasi data
-    $validatedData = $request->validate([
-        'nama_ruang' => 'required|string|max:255',
-        'gedung' => 'required|string|max:255',
-        'kuota' => 'required|integer|min:11',
-    ]);
-
-    // Cari data ruangan yang akan diupdate
-    $ruang = Ruang::find($id);
-
-    if ($ruang) {
-        // Update data
-        $ruang->update([
-            'nama_ruang' => $validatedData['nama_ruang'],
-            'gedung' => $validatedData['gedung'],
-            'kuota' => $validatedData['kuota'],
+        // Validasi data
+        $validatedData = $request->validate([
+            'nama_ruang' => 'required|string|max:255',
+            'gedung' => 'required|string|max:255',
+            'kuota' => 'required|integer|min:11',
         ]);
-
-        // Redirect kembali dengan pesan sukses
-        return redirect()->back()->with('success', 'Ruangan berhasil diupdate');
-    } else {
-        return redirect()->back()->with('error', 'Ruangan tidak ditemukan');
+    
+        // Cari data ruangan yang akan diupdate
+        $ruang = Ruang::find($id);
+    
+        if ($ruang) {
+            // Mulai transaksi database
+            DB::beginTransaction();
+    
+            try {
+                // Ambil nama_ruang lama
+                $oldNamaRuang = $ruang->nama_ruang;
+    
+                // Update data di tabel ruang
+                $ruang->update([
+                    'nama_ruang' => $validatedData['nama_ruang'],
+                    'gedung' => $validatedData['gedung'],
+                    'kuota' => $validatedData['kuota'],
+                ]);
+    
+                // Update referensi di tabel jadwal
+                DB::table('jadwal')
+                    ->where('nama_ruang', $oldNamaRuang)
+                    ->update(['nama_ruang' => $validatedData['nama_ruang']]);
+    
+                // Commit transaksi
+                DB::commit();
+    
+                // Redirect kembali dengan pesan sukses
+                return redirect()->back()->with('success', 'Ruangan berhasil diupdate');
+            } catch (\Exception $e) {
+                // Rollback jika terjadi error
+                DB::rollBack();
+                return redirect()->back()->with('error', 'Terjadi kesalahan saat mengupdate ruangan');
+            }
+        } else {
+            return redirect()->back()->with('error', 'Ruangan tidak ditemukan');
+        }
     }
-}
+    
     /**
      * Remove the specified resource from storage.
      */
