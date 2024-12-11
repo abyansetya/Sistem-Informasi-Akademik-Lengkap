@@ -22,7 +22,7 @@ function KHS({
             <div className="py-12 font-poppins">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="w-full">
-                        <h2 className="text-2xl font-bold mb-4">IRS</h2>
+                        <h2 className="text-2xl font-bold mb-4">KHS</h2>
                         <div className="space-y-2">
                             {Array.from(
                                 { length: rekapsmt[0].Semester },
