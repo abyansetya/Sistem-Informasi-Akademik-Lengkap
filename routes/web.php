@@ -122,6 +122,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/BagianAkademik/AlokasiRuangan/store', [BagianAkademikController::class, 'storeAlokasi'])->name('bagianakademik.storeAlokasi');
     Route::put('/BagianAkademik/AlokasiRuangan/{id}', [BagianAkademikController::class, 'updateAlokasi'])->name('bagianakademik.updateAlokasi');
     Route::delete('/BagianAkademik/AlokasiRuangan/{id}', [BagianAkademikController::class, 'destroyAlokasi'])->name('bagianakademik.destroyAlokasi');
+    Route::post('/BagianAkademik/updateStatus/{kodeProdi}',[BagianAkademikController::class, 'changeAlokasiStatus'])->name('bagianakademik.changeAlokasiStatus');
+    Route::post('/BagianAkademik/resetAlokasiStatus/{kodeProdi}',[BagianAkademikController::class, 'resetAlokasiStatus'])->name('bagianakademik.resetAlokasiStatus');
 
     Route::get('/Kaprodi/dashboard', [KaprodiController::class, 'index'])->middleware(CheckRole::class . ':Ketua Prodi')->name('kaprodi.index');
     Route::get('/Kaprodi/jadwalKuliah', [KaprodiController::class, 'jadwalKuliah'])->middleware(CheckRole::class . ':Ketua Prodi')->name('kaprodi.jadwalKuliah');
