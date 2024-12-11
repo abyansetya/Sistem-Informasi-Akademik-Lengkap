@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout1';
 import { Head, Link, useForm } from "@inertiajs/react";
 import { router } from '@inertiajs/react';
+import Swal from 'sweetalert2';
+import { destroy } from '@inertiajs/inertia';
 
 
-function KelolaRuang({ ruangKelas }) {
+function KelolaRuang({ ruang }) {
     // State untuk form input
     const { data, setData, post, put, reset } = useForm({
         id: '',
@@ -16,17 +18,70 @@ function KelolaRuang({ ruangKelas }) {
     // Handler untuk form submit
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (data.id) {
-            // Update data ruangan
-            put(route('bagianakademik.updateRuang', data.id), {
-                onSuccess: () => reset()
+        
+        // Validasi sederhana sebelum submit
+        if (!data.nama_ruang || !data.gedung || !data.kuota) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Validasi Gagal',
+                text: 'Harap lengkapi semua field yang diperlukan'
             });
-        } else {
-            // Tambah data ruangan baru
-            post(route('bagianakademik.storeRuang'), {
-                onSuccess: () => reset()
-            });
+            return;
         }
+    
+        // Konfirmasi sebelum submit
+        Swal.fire({
+            title: data.id ? 'Update Ruangan' : 'Tambah Ruangan Baru',
+            text: data.id 
+                ? 'Apakah Anda yakin ingin memperbarui data ruangan?' 
+                : 'Apakah Anda yakin ingin menambah ruangan baru?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Lanjutkan',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                if (data.id) {
+                    // Update data ruangan
+                    put(route('bagianakademik.updateRuang', data.id), {
+                        onSuccess: () => {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: 'Data ruangan berhasil diperbarui'
+                            });
+                            reset();
+                        },
+                        onError: (error) => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Kesalahan',
+                                text: 'Gagal memperbarui data ruangan: ' + error.message
+                            });
+                        }
+                    });
+                } else {
+                    // Tambah data ruangan baru
+                    post(route('bagianakademik.storeRuang'), {
+                        onSuccess: () => {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: 'Ruangan baru berhasil ditambahkan'
+                            });
+                            reset();
+                        },
+                        onError: (error) => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Kesalahan',
+                                text: 'Gagal menambah ruangan: ' + error.message
+                            });
+                        }
+                    });
+                }
+            }
+        });
     };
 
     // Handle untuk mengedit data ruangan (memuat data ke form)
@@ -41,9 +96,34 @@ function KelolaRuang({ ruangKelas }) {
 
     // Handler untuk menghapus ruangan
     const handleDelete = (id) => {
-        if (confirm('Apakah Anda yakin ingin menghapus ruangan ini?')) {
-            router.delete(route('bagianakademik.destroyRuang', id));
-        }
+        Swal.fire({
+            title: 'Konfirmasi Hapus',
+            text: 'Apakah Anda yakin ingin menghapus ruangan ini?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                router.delete(route('bagianakademik.destroyRuang', id),{
+                    onSuccess: () => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: 'Ruang berhasil dihapus',
+                        });
+                    },
+                    onError: (error) => {
+                        console.error('Terjadi kesalahan:', error);
+                        Swal.fire({
+                          icon: 'error',
+                          title: 'Kesalahan',
+                          text: 'Gagal menghapus alokasi.',
+                        });
+                    },
+                });
+            }
+        });
     };
 
     const handleResetToInsert = () => {
@@ -55,7 +135,7 @@ function KelolaRuang({ ruangKelas }) {
     const PaginationLinks = () => {
         return (
           <div className="flex justify-center mt-4">
-            {ruangKelas.links.map((link, index) => (
+            {ruang.links.map((link, index) => (
               <Link
                 key={index}
                 href={link.url ? link.url : '#'}
@@ -159,7 +239,7 @@ function KelolaRuang({ ruangKelas }) {
                                 </tr>
                             </thead>
                             <tbody className="text-gray-600 font-light">
-                                {ruangKelas.data.map((ruang) => (
+                                {ruang.data.map((ruang) => (
                                     <tr
                                         key={ruang.id}
                                         className="border-b border-gray-300 hover:bg-gray-50"

@@ -15,7 +15,8 @@ class Ruang extends Model
 
 
     // Tentukan kolom yang boleh diisi menggunakan mass assignment
-    protected $fillable = ['nama_ruang', 'gedung', 'kuota'];
+    protected $fillable = ['nama_ruang', 'gedung', 'kuota', 'status', 'kode_prodi'];
+
 
     public function programStudi()
     {
