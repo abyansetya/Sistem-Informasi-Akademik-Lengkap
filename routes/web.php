@@ -107,6 +107,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/Doswal/VerifikasiIRSByAngkatan/{nim}', [DoswalController::class, 'Jadwalirs'])->middleware(CheckRole::class.':Pembimbing Akademik')->name('doswal.Jadwalirs');
     Route::get('/Doswal/statusPerkembangan', [DoswalController::class, 'statusPerkembangan'])->middleware(CheckRole::class.':Pembimbing Akademik')->name('doswal.statusPerkembangan');
     Route::get('/Doswal/monitoringMK', [DoswalController::class, 'monitoringMK'])->middleware(CheckRole::class.':Pembimbing Akademik')->name('doswal.monitoringMK');
+    Route::get('/Doswal/download-irs/{semester}/{NIM}/{Tahun_Ajaran}/{keterangan}', [MhsController::class, 'downloadIRS'])
+    ->name('doswal.downloadIRS');// Jika ingin mengizinkan berbagai format Tahun_Ajaran
+
     Route::get('/Kaprodi/dashboard', [KaprodiController::class, 'index'])->middleware(CheckRole::class.':Ketua Prodi')->name('kaprodi.index');
     Route::get('/PilihRole', [PilihRoleController::class, 'index'])->name('pilihrole.index');
     Route::post('/PilihRole/choose', [PilihRoleController::class, 'choose'])->name('pilihrole.choose');

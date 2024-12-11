@@ -16,6 +16,8 @@ use App\Models\TahunAjaran;
 use App\Models\MataKuliah;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 
 
 class DoswalController extends Controller
@@ -265,27 +267,30 @@ public function approveAllIRS(Request $request)
     
     // Mendapatkan mahasiswa berdasarkan NIM dan NIP wali
     $mahasiswa = Mahasiswa::where('NIP_wali', $doswal->NIP)
-                          ->where('NIM', $nim)
-                          ->first();
-
+                        ->where('NIM', $nim)
+                        ->first();
     // Memastikan mahasiswa ditemukan
     if (!$mahasiswa) {
         return redirect()->back()->with('error', 'Mahasiswa tidak ditemukan');
     }
-
     $tahun_ajaran = TahunAjaran::where('status', 'Aktif')->firstOrFail();
-
     // Mengambil tahun ajaran yang aktif
-   
     if($tahun_ajaran){
         $irs = Irs::where("NIM", $nim)
         ->where('Tahun_Ajaran', $tahun_ajaran->tahun)
         ->where('keterangan', $tahun_ajaran->keterangan)
         ->get();
     }
-    $irs_ids = $irs->pluck('irs_id');
 
-   
+    $rekapsmt = collect(); // Default nilai kosong
+    if ($tahun_ajaran) {
+        $rekapsmt = RekapPrestasi::where('NIM', $mahasiswa->NIM)
+            ->where('Tahun_Ajaran', $tahun_ajaran->tahun)
+            ->where('keterangan', $tahun_ajaran->keterangan)
+            ->get();
+    }
+    
+    $irs_ids = $irs->pluck('irs_id');
     $jadwal = Jadwal::join('mata_kuliah', 'jadwal.kode_mk', '=', 'mata_kuliah.kode_mk')
         ->leftJoin('dosen_mk', 'jadwal.kode_mk', '=', 'dosen_mk.kode_mk')
         ->leftJoin('dosen_pegawai', 'dosen_mk.NIP', '=', 'dosen_pegawai.NIP')
@@ -326,10 +331,64 @@ public function approveAllIRS(Request $request)
         'user' => $user,
         'roles' => $roles,
         'mahasiswa' => $mahasiswa,
-        'irs' => $jadwal                                                                                    
+        'irs' => $jadwal,   
+        'tahun_ajaran' => $tahun_ajaran,
+        'rekapsmt' => $rekapsmt                                                                              
     ]);
 }
 
+
+public function downloadIRS($semester, $NIM, $Tahun_Ajaran, $keterangan)
+{
+    
+    $user = Auth::user();   
+    $mahasiswa = Mahasiswa::where('NIM', $NIM)->first();
+
+    $irs = Irs::join('jadwal', 'irs.jadwal_id', '=', 'jadwal.jadwal_id')
+        ->join('mata_kuliah', 'jadwal.kode_mk', '=', 'mata_kuliah.kode_mk')
+        ->leftJoin('dosen_mk', 'jadwal.kode_mk', '=', 'dosen_mk.kode_mk')
+        ->leftJoin('dosen_pegawai', 'dosens_mk.NIP', '=', 'dosen_pegawai.NIP')
+        ->where('irs.NIM', $NIM)
+        ->where('irs.Tahun_Ajaran', $Tahun_Ajaran)
+        ->where('irs.keterangan', $keterangan)
+        ->select(
+            'irs.*',  // Ambil semua kolom dari tabel IRS
+            'jadwal.jadwal_id',
+            'jadwal.hari',
+            'jadwal.jam_mulai',
+            'jadwal.jam_selesai',
+            'jadwal.kelas',
+            'mata_kuliah.kode_mk',
+            'mata_kuliah.Name AS mata_kuliah_name',
+            'mata_kuliah.sks',
+            'mata_kuliah.semester',
+            DB::raw("GROUP_CONCAT(dosen_pegawai.Name SEPARATOR ', ') AS dosen_names")
+        )
+        ->groupBy(
+            'irs.irs_id',  // Kolom dari IRS
+            'irs.NIM',
+            'irs.Tahun_Ajaran',
+            'irs.keterangan',
+            'irs.status_pengambilan',
+            'irs.jadwal_id',  // Kolom dari IRS
+            'irs.status',  // Kolom yang menyebabkan error, tambahkan ke GROUP BY
+            'irs.created_at',
+            'irs.updated_at',
+            'jadwal.jadwal_id',  // Kolom dari Jadwal
+            'jadwal.hari',
+            'jadwal.jam_mulai',
+            'jadwal.jam_selesai',
+            'jadwal.kelas',
+            'mata_kuliah.kode_mk',
+            'mata_kuliah.Name',
+            'mata_kuliah.sks',
+            'mata_kuliah.semester'
+        )
+        ->get();
+
+    $pdf = PDF::loadView('pdf.irs', compact('mahasiswa', 'irs', 'semester'));
+    return $pdf->download("IRS_Semester_$semester.pdf");
+}
 
 
 // public function downloadPdf($nim)
