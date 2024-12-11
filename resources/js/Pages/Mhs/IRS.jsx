@@ -653,6 +653,8 @@ export default function IRS({
                 },
             });
 
+            console.log(semester);
+
             const response = await axios.get(
                 route("mhs.downloadIRS", {
                     semester,

@@ -476,7 +476,7 @@ class MhsController extends Controller
     public function downloadIRS($semester, $NIM, $Tahun_Ajaran, $keterangan)
     {
         $user = Auth::user();
-        $mahasiswa = Mahasiswa::where('user_id', $user->user_id)->first();
+        $mahasiswa = Mahasiswa::where('NIM', $NIM )->first();
     
         $irs = Irs::join('jadwal', 'irs.jadwal_id', '=', 'jadwal.jadwal_id')
             ->join('mata_kuliah', 'jadwal.kode_mk', '=', 'mata_kuliah.kode_mk')
