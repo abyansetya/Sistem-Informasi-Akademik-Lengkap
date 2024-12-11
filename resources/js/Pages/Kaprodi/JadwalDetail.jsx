@@ -65,8 +65,10 @@ function JadwalDetail({ user, roles, mataKuliah, dosenList, ruangList, existingJ
     
         return endTime;
     };
-    
-    
+
+    const [isRuangTaken, setIsRuangTaken] = useState(false);
+    const [ruangError, setRuangError] = useState('');
+
     // Initial form state as a function to allow easy resetting
     const getInitialFormState = () => ({
         kodeMK: mataKuliah.kode_mk, 
@@ -102,6 +104,30 @@ function JadwalDetail({ user, roles, mataKuliah, dosenList, ruangList, existingJ
         });
     };
 
+    const checkRuangAvailability = async () => {
+        try {
+            const response = await axios.post('/cek-ruang', {
+                nama_ruang: formData.ruang,
+                hari: formData.hari,
+                jam_mulai: formData.waktuMulai,
+                jam_selesai: formData.waktuSelesai,
+            });
+    
+            // Mengupdate status apakah ruang terpakai atau tidak
+            if (response.data.alert) {
+                setIsRuangTaken(true);
+                setRuangError(response.data.message);
+            } else {
+                setIsRuangTaken(false);
+                setRuangError('');
+            }
+        } catch (error) {
+            console.error('Error checking ruang availability:', error);
+            setIsRuangTaken(true);  // Menganggap ruang tidak tersedia jika ada error
+            setRuangError('Terjadi kesalahan, silakan coba lagi!');
+        }
+    };
+
     const checkKelasExistence = async (kelas) => {
         try {
             const response = await fetch(`/cek-jadwal/${formData.kodeMK}/${kelas}`);
@@ -128,32 +154,53 @@ function JadwalDetail({ user, roles, mataKuliah, dosenList, ruangList, existingJ
         checkKelasExistence(selectedClass);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        
-        const startTime = formData.waktuMulai;
-        const [startHour, startMinute] = startTime.split(":").map(Number);
-        const startTotalMinutes = startHour * 60 + startMinute;
     
+        // Validasi waktu (untuk menjaga agar waktu mulai dan selesai berada dalam rentang yang benar)
+        const [startHour, startMinute] = formData.waktuMulai.split(":").map(Number);
+        const startTotalMinutes = startHour * 60 + startMinute;
         const minStartTime = 5 * 60 + 30;
+        const [endHour, endMinute] = formData.waktuSelesai.split(":").map(Number);
+        const endTotalMinutes = endHour * 60 + endMinute;
         const maxEndTime = 20 * 60 + 40;
     
         if (startTotalMinutes < minStartTime) {
-            alert("Waktu mulai tidak boleh lebih awal dari 05:30.");
-            return;
+            setRuangError("Waktu mulai tidak boleh lebih awal dari 05:30.");
+            return; // Hentikan eksekusi jika waktu mulai tidak valid
         }
-    
-        const endTime = formData.waktuSelesai;
-        const [endHour, endMinute] = endTime.split(":").map(Number);
-        const endTotalMinutes = endHour * 60 + endMinute;
-    
         if (endTotalMinutes > maxEndTime) {
-            alert("Waktu selesai tidak boleh lebih dari 20:40.");
+            setRuangError("Waktu selesai tidak boleh lebih dari 20:40.");
             return;
         }
     
+        // Validasi ruang
+        try {
+            const response = await axios.post('/cek-ruang', {
+                nama_ruang: formData.ruang,
+                hari: formData.hari,
+                jam_mulai: formData.waktuMulai,
+                jam_selesai: formData.waktuSelesai,
+            });
+    
+            if (response.data.alert) {
+                setIsRuangTaken(true);
+                setRuangError(response.data.message);
+                return; // Hentikan jika ruang tidak tersedia
+            } else {
+                setIsRuangTaken(false);
+                setRuangError('');
+            }
+        } catch (error) {
+            console.error('Error checking ruang availability:', error);
+            setRuangError('Terjadi kesalahan saat memeriksa ruang. Silakan coba lagi.');
+            return; // Hentikan jika ada error
+        }
+    
+        // Jika semua validasi lolos, tampilkan modal konfirmasi
         setShowModal(true);
     };
+
 
     const confirmSubmit = () => {
         setShowModal(false);
@@ -295,6 +342,7 @@ function JadwalDetail({ user, roles, mataKuliah, dosenList, ruangList, existingJ
                             options={ruangList}
                             labelKey="nama_ruang"
                         />
+                        {ruangError && <p className="text-red-500 text-sm mt-1">{ruangError}</p>}
 
                         <div className="mt-4 flex justify-between">
                             {existingJadwal ? (

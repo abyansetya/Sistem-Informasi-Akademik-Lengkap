@@ -136,8 +136,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/cek-jadwal/{kode_mk}/{kelas}', [KaprodiController::class, 'cekJadwal']);
     Route::post('/Kaprodi/mata-kuliah', [KaprodiController::class, 'tambahMataKuliah'])->middleware('auth')->name('kaprodi.mataKuliah.store');
     Route::post('/mata-kuliah', [KaprodiController::class, 'tambahMataKuliah'])->middleware('auth');
-    Route::post('/kaprodi/get-available-rooms', [KaprodiController::class, 'getAvailableRooms']);
-
+    Route::post('/cek-ruang', [KaprodiController::class, 'cekRuang'])->name('cek.ruang');
 
 
 });

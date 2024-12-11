@@ -91,7 +91,10 @@ class KaprodiController extends Controller
         $roles = session('selected_role', 'default');
         $mataKuliah = DB::table('mata_kuliah')->where('id', $id)->first();
         $dosenList = DB::table('dosen_pegawai')->select('NIP', 'Name')->get();
-        $ruangList = DB::table('ruang')->select('id', 'nama_ruang')->get();
+        $ruangList = DB::table('ruang')
+            ->select('id', 'nama_ruang')
+            ->where('status', 'approved') // Menambahkan kondisi status = approved
+            ->get();
     
         return Inertia::render('Kaprodi/JadwalDetail', [
             'user' => $user,
@@ -185,36 +188,40 @@ class KaprodiController extends Controller
         return response()->json(['exists' => $jadwal ? true : false]);
     }
 
-    public function cekRuangTersedia(Request $request)
-{
-    $validatedData = $request->validate([
-        'hari' => 'required|string',
-        'jam_mulai' => 'required|date_format:H:i',
-        'jam_selesai' => 'required|date_format:H:i',
-    ]);
-
-    // Get all rooms
-    $semuaRuang = DB::table('ruang')->select('id', 'nama_ruang')->get();
-
-    // Find rooms already booked during the specified time
-    $ruangTerpakai = DB::table('jadwal')
-        ->where('hari', $validatedData['hari'])
-        ->where(function($query) use ($validatedData) {
-            $query->where(function($q) use ($validatedData) {
-                // Check if new schedule overlaps with existing schedules
-                $q->where('jam_mulai', '<', $validatedData['jam_selesai'])
-                  ->where('jam_selesai', '>', $validatedData['jam_mulai']);
-            });
-        })
-        ->pluck('nama_ruang');
-
-    // Filter out booked rooms
-    $ruangTersedia = $semuaRuang->reject(function ($ruang) use ($ruangTerpakai) {
-        return $ruangTerpakai->contains($ruang->nama_ruang);
-    });
-
-    return response()->json($ruangTersedia);
-}
+    public function cekRuang(Request $request)
+    {
+        // Validasi input
+        $validatedData = $request->validate([
+            'nama_ruang' => 'required|exists:ruang,nama_ruang', // Pastikan ruang ada di tabel ruang
+            'hari' => 'required|string', // Hari yang dipilih
+            'jam_mulai' => 'required|date_format:H:i', // Waktu mulai
+            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai', // Waktu selesai, setelah jam mulai
+        ]);
+        // Cek apakah ruangan sudah terpakai pada waktu yang sama
+        $ruangTerpakai = Jadwal::where('nama_ruang', $validatedData['nama_ruang'])
+            ->where('hari', $validatedData['hari'])
+            ->where(function ($query) use ($validatedData) {
+                // Cek apakah ada jadwal yang bertabrakan dengan jam yang dipilih
+                $query->whereBetween('jam_mulai', [$validatedData['jam_mulai'], $validatedData['jam_selesai']])
+                    ->orWhereBetween('jam_selesai', [$validatedData['jam_mulai'], $validatedData['jam_selesai']])
+                    ->orWhere(function ($q) use ($validatedData) {
+                        $q->where('jam_mulai', '<=', $validatedData['jam_mulai'])
+                            ->where('jam_selesai', '>=', $validatedData['jam_selesai']);
+                    });
+            })
+            ->exists(); // Cek apakah ada jadwal yang bertabrakan
+        // Jika ruangan sudah terpakai, beri notifikasi
+        if ($ruangTerpakai) {
+            return response()->json([
+                'alert' => true,
+                'message' => 'Ruang sudah terpakai pada hari dan jam yang dipilih.',
+            ]);
+        }
+        // Jika ruang tersedia, tidak perlu respons khusus
+        return response()->json([
+            'alert' => false,
+        ]);
+    }
 
     // MAHASISWA
     public function mahasiswa()
