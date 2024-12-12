@@ -102,6 +102,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/Doswal/verifikasiIRS', [DoswalController::class, 'verifikasiIRS'])->middleware(CheckRole::class.':Pembimbing Akademik')->name('doswal.verifikasiIRS');
     Route::get('/Doswal/VerifikasiIRS/{angkatan}', [DoswalController::class, 'verifikasiIRSByAngkatan'])->middleware(CheckRole::class.':Pembimbing Akademik')->name('doswal.VerifikasiIRSByAngkatan');
     Route::post('/Doswal/VerifikasiIRS/approveAll', [DoswalController::class, 'approveAll'])->middleware(CheckRole::class . ':Pembimbing Akademik')->name('doswal.approveAll');
+    Route::post('/Doswal/VerifikasiIRSByAngkatan/approveIRS', [DoswalController::class, 'approveIRS'])->middleware(CheckRole::class . ':Pembimbing Akademik')->name('doswal.approveIRS');
+    Route::post('/Doswal/VerifikasiIRSByAngkatan/resetIRS', [DoswalController::class, 'resetIRS'])->middleware(CheckRole::class . ':Pembimbing Akademik')->name('doswal.resetIRS');
+    Route::get('/Doswal/VerifikasiIRSByAngkatan/{nim}', [DoswalController::class, 'Jadwalirs'])->middleware(CheckRole::class.':Pembimbing Akademik')->name('doswal.Jadwalirs');
     Route::get('/Doswal/statusPerkembangan', [DoswalController::class, 'statusPerkembangan'])->middleware(CheckRole::class.':Pembimbing Akademik')->name('doswal.statusPerkembangan');
     Route::get('/Doswal/monitoringMK', [DoswalController::class, 'monitoringMK'])->middleware(CheckRole::class.':Pembimbing Akademik')->name('doswal.monitoringMK');
     Route::get('/Kaprodi/dashboard', [KaprodiController::class, 'index'])->middleware(CheckRole::class.':Ketua Prodi')->name('kaprodi.index');
@@ -119,6 +122,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/BagianAkademik/AlokasiRuangan/store', [BagianAkademikController::class, 'storeAlokasi'])->name('bagianakademik.storeAlokasi');
     Route::put('/BagianAkademik/AlokasiRuangan/{id}', [BagianAkademikController::class, 'updateAlokasi'])->name('bagianakademik.updateAlokasi');
     Route::delete('/BagianAkademik/AlokasiRuangan/{id}', [BagianAkademikController::class, 'destroyAlokasi'])->name('bagianakademik.destroyAlokasi');
+    Route::post('/BagianAkademik/updateStatus/{kodeProdi}',[BagianAkademikController::class, 'changeAlokasiStatus'])->name('bagianakademik.changeAlokasiStatus');
+    Route::post('/BagianAkademik/resetAlokasiStatus/{kodeProdi}',[BagianAkademikController::class, 'resetAlokasiStatus'])->name('bagianakademik.resetAlokasiStatus');
+
+    Route::get('/Kaprodi/dashboard', [KaprodiController::class, 'index'])->middleware(CheckRole::class . ':Ketua Prodi')->name('kaprodi.index');
+    Route::get('/Kaprodi/jadwalKuliah', [KaprodiController::class, 'jadwalKuliah'])->middleware(CheckRole::class . ':Ketua Prodi')->name('kaprodi.jadwalKuliah');
+    Route::get('/Kaprodi/jadwalDetail/{id}', [KaprodiController::class, 'jadwalDetail'])->middleware(CheckRole::class . ':Ketua Prodi')->name('kaprodi.jadwalDetail');
+    Route::post('/Kaprodi/simpanJadwal', [KaprodiController::class, 'simpanJadwal'])->name('kaprodi.simpanJadwal');
+
+    Route::delete('/Kaprodi/hapusJadwal/{id}', [KaprodiController::class, 'hapusJadwal'])->middleware(CheckRole::class . ':Ketua Prodi')->name('kaprodi.hapusJadwal');
+    Route::get('/Kaprodi/mahasiswa', [KaprodiController::class, 'mahasiswa'])->middleware(CheckRole::class . ':Ketua Prodi')->name('kaprodi.mahasiswa');
+    Route::get('/Kaprodi/monitoring', [KaprodiController::class, 'monitoring'])->middleware(CheckRole::class . ':Ketua Prodi')->name('kaprodi.monitoring');
+    Route::get('/cek-jadwal/{kode_mk}/{kelas}', [KaprodiController::class, 'cekJadwal']);
+    Route::post('/Kaprodi/mata-kuliah', [KaprodiController::class, 'tambahMataKuliah'])->middleware('auth')->name('kaprodi.mataKuliah.store');
+    Route::post('/mata-kuliah', [KaprodiController::class, 'tambahMataKuliah'])->middleware('auth');
+    Route::post('/cek-ruang', [KaprodiController::class, 'cekRuang'])->name('cek.ruang');
+
+
 });
 
 Route::middleware('auth')->group(function () {

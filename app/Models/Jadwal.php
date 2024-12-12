@@ -23,6 +23,7 @@ class Jadwal extends Model
         'kode_mk',
         'kelas',
         'nama_ruang',
+        'kode_prodi',
         'status',
         'created_at',
         'updated_at',
@@ -53,6 +54,4 @@ class Jadwal extends Model
     {
         return $this->belongsTo(Kelas::class, 'kelas', 'nama_kelas');
     }
-
-
 }

@@ -76,7 +76,7 @@ function MahasiswaPerwalian({ roles, mahasiswa = [] }) {
                                 alt=""
                                 className="mr-4 h-[30px]"
                             />
-                            <p className="text-[30px] md:text-[24px] font-bold">
+                            <p className="text-[30px] md:text-[18px] font-bold">
                                 Mahasiswa Perwalian
                             </p>
                         </div>
@@ -222,7 +222,7 @@ function MahasiswaPerwalian({ roles, mahasiswa = [] }) {
                                                                 mhs.status ===
                                                                 "active"
                                                                     ? "bg-red-100 text-red-800"
-                                                                    : "bg-green-100 text-green-800"
+                                                                    : "bg-cgreen-2 text-cgrey-0"
                                                             }`}
                                                         >
                                                             {mhs.status ===

@@ -2,71 +2,250 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DosenMk;
 use App\Models\User;
+use App\Models\MataKuliah;
+use App\Models\Jadwal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
+// DASHBOARD
 class KaprodiController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $user = Auth::user();
         $roles = session('selected_role', 'default');
+        
         return Inertia::render('Kaprodi/Dashboard', [
             'user' => $user,
-            'roles' => $roles
+            'roles' => $roles,
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    // JADWALKULIAH
+    public function jadwalKuliah(Request $request)
     {
-        //
+        $user = Auth::user();
+        $roles = session('selected_role', 'default');
+        
+        $query = DB::table('mata_kuliah')->select('id', 'Name', 'sks', 'semester');
+        
+        if ($request->has('semester')) {
+            $query->where('semester', $request->semester);
+        }
+
+        if ($request->has('nama_mata_kuliah')) {
+            $query->where('Name', 'like', '%' . $request->nama_mata_kuliah . '%');
+        }
+
+        $mataKuliah = $query->get();
+    
+        return Inertia::render('Kaprodi/JadwalKuliah', [
+            'user' => $user,
+            'roles' => $roles,
+            'mataKuliah' => $mataKuliah,
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function tambahMataKuliah(Request $request)
     {
-        //
+        DB::beginTransaction(); // Start a database transaction
+    
+        try {
+            // Validasi data dari form
+            $validatedData = $request->validate([
+                'kodeMK' => 'required|unique:mata_kuliahs,kodeMK|max:10',
+                'name' => 'required|max:255',
+                'sks' => 'required|integer',
+                'semester' => 'required|integer',
+                'prioritasSemester' => 'required|integer',
+            ]);
+    
+            // Menyimpan data mata kuliah ke database
+            MataKuliah::create($validatedData);
+    
+            DB::commit(); // Commit the transaction if everything is fine
+    
+            // Kembali ke halaman dengan status sukses
+            return redirect()->route('kaprodi.jadwalKuliah')->with('success', 'Mata kuliah berhasil ditambahkan!');
+        } catch (\Exception $e) {
+            DB::rollBack(); // Rollback the transaction if an error occurs
+    
+            // Log the error for debugging
+            Log::error('Error adding mata kuliah: ' . $e->getMessage());
+    
+            // Kembali ke halaman sebelumnya dengan pesan error
+            return back()->withErrors(['error' => 'Terjadi kesalahan saat menambahkan mata kuliah. Silakan coba lagi.']);
+        }
+    }
+    
+
+    // JADWALDETAIL
+    public function jadwalDetail($id)
+    {
+        $user = Auth::user();
+        $roles = session('selected_role', 'default');
+        $mataKuliah = DB::table('mata_kuliah')->where('id', $id)->first();
+        $dosenList = DB::table('dosen_pegawai')->select('NIP', 'Name')->get();
+        $ruangList = DB::table('ruang')
+            ->select('id', 'nama_ruang')
+            ->where('status', 'approved') // Menambahkan kondisi status = approved
+            ->get();
+    
+        return Inertia::render('Kaprodi/JadwalDetail', [
+            'user' => $user,
+            'roles' => $roles,
+            'mataKuliah' => $mataKuliah,
+            'dosenList' => $dosenList,
+            'ruangList' => $ruangList,
+        ]);
+    }
+    public function simpanJadwal(Request $request)
+{
+
+    try {
+        // Validate input data
+        $validatedData = $request->validate([
+            'kode_mk' => 'required|exists:mata_kuliah,kode_mk',
+            'nip_dosen' => 'required|exists:dosen_pegawai,nip', // Assuming the column name is 'nip'
+            'nama_ruang' => 'required|exists:ruang,nama_ruang',
+            'kode_prodi' => 'required|exists:program_studi,kode_prodi',
+            'hari' => 'required|string',
+            'jam_mulai' => 'required|date_format:H:i',
+            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
+            'kelas' => 'required|string',
+
+        ]);
+
+        // Save data to the database
+
+        DB::beginTransaction();
+
+        Jadwal::create([
+            'kode_mk' => $validatedData['kode_mk'],
+            'nip_dosen' => $validatedData['nip_dosen'],
+            'nama_ruang' => $validatedData['nama_ruang'],
+            'kode_prodi' => $validatedData['kode_prodi'],
+            'hari' => $validatedData['hari'],
+            'jam_mulai' => $validatedData['jam_mulai'],
+            'jam_selesai' => $validatedData['jam_selesai'],
+            'kelas' => $validatedData['kelas'],
+            'status' => 'pending',
+
+        ]);
+
+        DosenMk::create([
+            'NIP' => $validatedData['nip_dosen'],
+            'kode_mk' => $validatedData['kode_mk'],
+        ]);
+
+        DB::commit();
+
+        // Redirect with success message
+
+        return redirect()->route('kaprodi.jadwalKuliah')
+
+            ->with('success', 'Jadwal Kuliah berhasil disimpan!');
+
+    } catch (\Exception $e) {
+
+        DB::rollBack();
+
+        Log::error('Error saving jadwal: ' . $e->getMessage());
+
+        return back()->withErrors(['error' => 'Terjadi kesalahan saat menyimpan jadwal. Silakan coba lagi.']);
+
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(User $user)
+}
+
+    public function hapusJadwal($id)
     {
-        //
+        DB::beginTransaction();
+
+        try {
+            // Hapus jadwal berdasarkan ID
+            DB::table('jadwal')->where('id', $id)->delete();
+
+            DB::commit();
+            return redirect()->route('kaprodi.jadwalKuliah')->with('success', 'Jadwal berhasil dihapus!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+        }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(User $user)
+    public function cekJadwal($kode_mk, $kelas)
     {
-        //
+        $jadwal = Jadwal::where('kode_mk', $kode_mk)
+                        ->where('kelas', $kelas)
+                        ->first();
+
+        return response()->json(['exists' => $jadwal ? true : false]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, User $user)
+    public function cekRuang(Request $request)
     {
-        //
+        // Validasi input
+        $validatedData = $request->validate([
+            'nama_ruang' => 'required|exists:ruang,nama_ruang', // Pastikan ruang ada di tabel ruang
+            'hari' => 'required|string', // Hari yang dipilih
+            'jam_mulai' => 'required|date_format:H:i', // Waktu mulai
+            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai', // Waktu selesai, setelah jam mulai
+        ]);
+        // Cek apakah ruangan sudah terpakai pada waktu yang sama
+        $ruangTerpakai = Jadwal::where('nama_ruang', $validatedData['nama_ruang'])
+            ->where('hari', $validatedData['hari'])
+            ->where(function ($query) use ($validatedData) {
+                // Cek apakah ada jadwal yang bertabrakan dengan jam yang dipilih
+                $query->whereBetween('jam_mulai', [$validatedData['jam_mulai'], $validatedData['jam_selesai']])
+                    ->orWhereBetween('jam_selesai', [$validatedData['jam_mulai'], $validatedData['jam_selesai']])
+                    ->orWhere(function ($q) use ($validatedData) {
+                        $q->where('jam_mulai', '<=', $validatedData['jam_mulai'])
+                            ->where('jam_selesai', '>=', $validatedData['jam_selesai']);
+                    });
+            })
+            ->exists(); // Cek apakah ada jadwal yang bertabrakan
+        // Jika ruangan sudah terpakai, beri notifikasi
+        if ($ruangTerpakai) {
+            return response()->json([
+                'alert' => true,
+                'message' => 'Ruang sudah terpakai pada hari dan jam yang dipilih.',
+            ]);
+        }
+        // Jika ruang tersedia, tidak perlu respons khusus
+        return response()->json([
+            'alert' => false,
+        ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(User $user)
+    // MAHASISWA
+    public function mahasiswa()
     {
-        //
+        $user = Auth::user();
+        $roles = session('selected_role', 'default');
+        $students = DB::table('students')->select('id', 'nama', 'nim', 'angkatan', 'status_irs')->get();
+
+        return Inertia::render('Kaprodi/Mahasiswa', [
+            'user' => $user,
+            'roles' => $roles,
+            'students' => $students,
+        ]);
+    }
+
+    // MONITORING
+    public function monitoring()
+    {
+        $user = Auth::user();
+        $roles = session('selected_role', 'default');
+        
+        return Inertia::render('Kaprodi/Monitoring', [
+            'user' => $user,
+            'roles' => $roles,
+        ]);
     }
 }

@@ -2,6 +2,7 @@ import React, {useState} from 'react'
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout1";
 import { Head, Link, useForm } from "@inertiajs/react";
 import { router } from '@inertiajs/react';
+import Swal from 'sweetalert2'
 
 function KelolaProgramStudi({ programStudi }) {
     // State untuk form input
@@ -14,17 +15,70 @@ function KelolaProgramStudi({ programStudi }) {
     // Handler untuk form submit
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (data.prodi_id) {
-            // Update data Program Studi
-            put(route("bagianakademik.updateProgramStudi", data.prodi_id), {
-                onSuccess: () => reset(),
+        
+        // Validasi sederhana sebelum submit
+        if (!data.nama_prodi || !data.kode_prodi) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Validasi Gagal',
+                text: 'Harap lengkapi nama dan kode Program Studi'
             });
-        } else {
-            // Tambah data Program Studi baru
-            post(route("bagianakademik.storeProgramStudi"), {
-                onSuccess: () => reset(),
-            });
+            return;
         }
+    
+        // Konfirmasi sebelum submit
+        Swal.fire({
+            title: data.prodi_id ? 'Update Program Studi' : 'Tambah Program Studi Baru',
+            text: data.prodi_id 
+                ? 'Apakah Anda yakin ingin memperbarui data Program Studi?' 
+                : 'Apakah Anda yakin ingin menambah Program Studi baru?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Lanjutkan',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                if (data.prodi_id) {
+                    // Update data Program Studi
+                    put(route('bagianakademik.updateProgramStudi', data.prodi_id), {
+                        onSuccess: () => {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: 'Data Program Studi berhasil diperbarui'
+                            });
+                            reset();
+                        },
+                        onError: (error) => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Kesalahan',
+                                text: 'Gagal memperbarui Program Studi: ' + error.message
+                            });
+                        }
+                    });
+                } else {
+                    // Tambah data Program Studi baru
+                    post(route('bagianakademik.storeProgramStudi'), {
+                        onSuccess: () => {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: 'Program Studi baru berhasil ditambahkan'
+                            });
+                            reset();
+                        },
+                        onError: (error) => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Kesalahan',
+                                text: 'Gagal menambah Program Studi: ' + error.message
+                            });
+                        }
+                    });
+                }
+            }
+        });
     };
     // handle untuk mengedit data program studi (memuat data ke form)
     const handleEdit = (programstudi) => {
@@ -36,10 +90,34 @@ function KelolaProgramStudi({ programStudi }) {
     };
     // handle untuk menghapus program studi
     const handleDelete = (id) => {
-        if (confirm("Apakah Anda yakin ingin menghapus program studi ini?")) {
-            router.delete(route("bagianakademik.destroyProgramStudi", id));
-            console.log(id);
-        }
+        Swal.fire({
+            title: 'Konfirmasi Hapus',
+            text: 'Apakah Anda yakin ingin menghapus program studi ini?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                router.delete(route('bagianakademik.destroyProgramStudi', id),{
+                    onSuccess: () => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: 'Program studi berhasil dihapus',
+                        });
+                    },
+                    onError: (error) => {
+                        console.error('Terjadi kesalahan:', error);
+                        Swal.fire({
+                          icon: 'error',
+                          title: 'Kesalahan',
+                          text: 'Gagal menghapus Program srtudi.',
+                        });
+                    },
+                });
+            }
+        });
     };
 
     const handleResetToInsert = () => {
